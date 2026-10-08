@@ -1,0 +1,39 @@
+[package]
+name = "am3"
+description = "Material 3 Expressive controls for Aegle"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.88"
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+keywords = ["gui", "material", "material-design", "controls"]
+categories = ["gui"]
+
+[features]
+default = ["motion"]
+# Spring transitions and the library's own animations (ripples, shape
+# morphs, indeterminate progress); without it controls snap to new states.
+motion = ["aegle-ui/motion", "aegle-widgets/motion", "aegle-loader/motion"]
+# Semantic roles and actions for assistive technology.
+accessibility = ["aegle-ui/accessibility", "aegle-widgets/accessibility", "dep:aegle-access"]
+
+[dependencies]
+aegle-ui = { path = "../aegle/crates/aegle-ui" }
+aegle-widgets = { path = "../aegle/crates/aegle-widgets" }
+aegle-loader = { path = "../aegle/crates/aegle-loader" }
+aegle-controls = { path = "../aegle/crates/aegle-controls", features = ["text"] }
+aegle-motion = { path = "../aegle/crates/aegle-motion" }
+aegle-layout = { path = "../aegle/crates/aegle-layout" }
+aegle-text = { path = "../aegle/crates/aegle-text", features = ["scene"] }
+aegle-access = { path = "../aegle/crates/aegle-access", optional = true }
+
+[dev-dependencies]
+aegle-render-software = { path = "../aegle/crates/aegle-render-software", features = ["text"] }
+png = "0.18"
+
+[lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"
+
+[profile.dev.package."*"]
+opt-level = 2

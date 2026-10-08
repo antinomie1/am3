@@ -1,0 +1,15 @@
+# 实现状态
+
+本文件只记录已实现并验证过的内容。
+
+## 已实现
+
+- 配色：HCT（CAM16 + L*）与求解器、TonalSpot 方案的 47 个角色、四种模式、`Scheme::of` 线程缓存、`theme()` 生成 Aegle 主题、`am3.color.*` 令牌。`tests/color.rs`：基准种子 `#6750A4` 的浅/深色角色与 Material Color Utilities（Material Theme Builder 输出）一致到 ±2；5 个种子 × 4 种模式的文字对比度（普通 ≥ 4.5、高对比 ≥ 7）；四种模式生成的主题经 `Scheme::of` 还原为同一方案，Aegle 自带的深色与高对比主题得到对应模式。
+- 令牌：字体角色、圆角刻度、高度阴影、expressive/standard 弹簧、状态层不透明度。
+- 图标：SVG 路径解析（含弧线），37 个 Material Icons，按线程只解析一次。
+- 按钮类：按钮（5 样式 × 5 尺寸 × 圆/方，切换）、图标按钮（4 样式 × 5 尺寸 × 3 宽度，切换）、FAB（3 尺寸 × 6 配色）与扩展 FAB。涟漪、状态层、键盘焦点环、圆角形变与高度弹簧动画。`tests/buttons.rs`：切换按钮的翻转与回调、种类随切换变化；尺寸变化重新布局并按新字体角色重排标签（改文字后保持）；固定宽度；指针获焦不显示焦点、按键后显示。
+- 预览：`examples/gallery` 生成 `docs/images/*.png`，已逐张目视检查浅色与深色。
+
+## 依赖 Aegle 的改动
+
+为 am3 在 Aegle 中加入的通用接口（Aegle 提交 62a733e）：`Control::text_role`（控件的文字排版角色）、焦点可见语义（`VisualState::focused` 只在键盘焦点时为真，`Node::is_focused` 查询逻辑焦点）。

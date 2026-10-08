@@ -87,26 +87,34 @@ impl FabLook {
             icon,
             gap,
             text,
-            corner,
-            pressed: corner,
-            selected: corner,
+            corners: [corner, corner, shape::FULL],
+            inner: [corner; 3],
+            hover_inner: false,
             outline: 1.0,
             elevation: [3.0, 4.0],
         }
     }
 }
 
+// A selected FAB is the close button of an open FAB menu, in the strong
+// color of its set.
 kinds! {
     /// A FAB in primary container colors.
-    FAB_PRIMARY_CONTAINER = "Fab", primary_container => |s, _on| {
+    FAB_PRIMARY_CONTAINER = "Fab", primary_container => |s, on| if on {
+        Paint::new(s.primary, s.on_primary)
+    } else {
         Paint::new(s.primary_container, s.on_primary_container)
     };
     /// A FAB in secondary container colors.
-    FAB_SECONDARY_CONTAINER = "SecondaryContainerFab", secondary_container => |s, _on| {
+    FAB_SECONDARY_CONTAINER = "SecondaryContainerFab", secondary_container => |s, on| if on {
+        Paint::new(s.secondary, s.on_secondary)
+    } else {
         Paint::new(s.secondary_container, s.on_secondary_container)
     };
     /// A FAB in tertiary container colors.
-    FAB_TERTIARY_CONTAINER = "TertiaryContainerFab", tertiary_container => |s, _on| {
+    FAB_TERTIARY_CONTAINER = "TertiaryContainerFab", tertiary_container => |s, on| if on {
+        Paint::new(s.tertiary, s.on_tertiary)
+    } else {
         Paint::new(s.tertiary_container, s.on_tertiary_container)
     };
     /// A FAB in primary colors.
@@ -152,7 +160,7 @@ impl Fab {
         .map(Self)
     }
 
-    fn relook(&self, change: impl FnOnce(&mut FabLook)) -> Result {
+    pub(crate) fn relook(&self, change: impl FnOnce(&mut FabLook)) -> Result {
         let mut look = self.read(|c| match c.look {
             Look::Fab(look) => look,
             _ => unreachable!("a Fab handle holds a FAB"),

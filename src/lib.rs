@@ -14,16 +14,24 @@ pub mod tokens;
 mod anim;
 mod button;
 mod fab;
+mod fab_menu;
+mod group;
 mod icon_button;
 mod pressable;
+mod segmented;
 mod skin;
+mod split;
 
 pub use button::{Button, ButtonShape, ButtonSize, ButtonStyle};
 pub use color::{Mode, Role, Scheme, theme};
 pub use fab::{Fab, FabColor, FabSize};
+pub use fab_menu::{FabMenu, FabMenuItem};
+pub use group::{ButtonGroup, GroupStyle, Selection};
 pub use icon::{Icon, icons};
 pub use icon_button::{IconButton, IconStyle, IconWidth};
 pub use pressable::PressableControl;
+pub use segmented::{Segment, SegmentedButton};
+pub use split::SplitButton;
 
 /// Every kind this library declares, by component, for skin overrides with
 /// `Node::set_kind_skin`.
@@ -40,6 +48,7 @@ pub mod kinds {
         FILLED_ICON_BUTTON, FILLED_ICON_TOGGLE, OUTLINED_ICON_BUTTON, OUTLINED_ICON_TOGGLE,
         STANDARD_ICON_BUTTON, STANDARD_ICON_TOGGLE, TONAL_ICON_BUTTON, TONAL_ICON_TOGGLE,
     };
+    pub use crate::segmented::SEGMENT;
 }
 
 /// Gives a new control's colors Material's default effects spring.

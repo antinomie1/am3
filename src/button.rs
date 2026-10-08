@@ -77,17 +77,38 @@ impl ButtonSize {
     }
 }
 
+impl ButtonSize {
+    /// The corners where a button joins its neighbor, at rest, pressed (and
+    /// for a split button also hovered or focused) and selected: a connected
+    /// group squares them when pressed, a split button rounds them.
+    pub(crate) fn inner(self, split: bool) -> [Corner; 3] {
+        let (rest, active) = match (self, split) {
+            (Self::ExtraSmall, false) => (4.0, 4.0),
+            (Self::Small | Self::Medium, false) => (8.0, 4.0),
+            (Self::Large, false) => (16.0, 12.0),
+            (Self::ExtraLarge, false) => (20.0, 16.0),
+            (Self::ExtraSmall, true) => (4.0, 8.0),
+            (Self::Small | Self::Medium, true) => (4.0, 12.0),
+            (Self::Large, true) => (8.0, 20.0),
+            (Self::ExtraLarge, true) => (12.0, 20.0),
+        };
+        [Corner::Dp(rest), Corner::Dp(active), shape::FULL]
+    }
+}
+
 /// The variant of a common button.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(crate) struct ButtonLook {
     pub style: ButtonStyle,
     pub size: ButtonSize,
     pub shape: ButtonShape,
+    /// Part of a split button: its colors stay when selected.
+    pub split: bool,
 }
 
 impl ButtonLook {
     pub fn kind(self, toggle: bool) -> &'static ControlKind {
-        match (self.style, toggle) {
+        match (self.style, toggle && !self.split) {
             (ButtonStyle::Elevated, false) => &ELEVATED_BUTTON,
             (ButtonStyle::Elevated, true) => &ELEVATED_TOGGLE,
             (ButtonStyle::Filled, false) => &FILLED_BUTTON,
@@ -123,9 +144,9 @@ impl ButtonLook {
             icon,
             gap,
             text,
-            corner,
-            pressed,
-            selected,
+            corners: [corner, pressed, selected],
+            inner: self.size.inner(self.split),
+            hover_inner: self.split,
             outline,
             elevation,
         }
@@ -185,6 +206,7 @@ impl Button {
             style,
             size: ButtonSize::default(),
             shape: ButtonShape::default(),
+            split: false,
         });
         pressable::add(parent, |fonts, theme| {
             PressableControl::new(fonts, theme, look, text)
@@ -192,14 +214,14 @@ impl Button {
         .map(Self)
     }
 
-    fn look(&self) -> Result<ButtonLook> {
+    pub(crate) fn look(&self) -> Result<ButtonLook> {
         self.read(|c| match c.look {
             Look::Button(look) => look,
             _ => unreachable!("a Button handle holds a button"),
         })
     }
 
-    fn relook(&self, change: impl FnOnce(&mut ButtonLook)) -> Result {
+    pub(crate) fn relook(&self, change: impl FnOnce(&mut ButtonLook)) -> Result {
         let mut look = self.look()?;
         change(&mut look);
         pressable::relook(self, |c| c.set_look(Look::Button(look)))

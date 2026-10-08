@@ -42,11 +42,13 @@ pub(crate) struct IconLook {
     pub size: ButtonSize,
     pub shape: ButtonShape,
     pub width: IconWidth,
+    /// The menu part of a split button: its colors stay when selected.
+    pub split: bool,
 }
 
 impl IconLook {
     pub fn kind(self, toggle: bool) -> &'static ControlKind {
-        match (self.style, toggle) {
+        match (self.style, toggle && !self.split) {
             (IconStyle::Standard, false) => &STANDARD_ICON_BUTTON,
             (IconStyle::Standard, true) => &STANDARD_ICON_TOGGLE,
             (IconStyle::Filled, false) => &FILLED_ICON_BUTTON,
@@ -78,9 +80,9 @@ impl IconLook {
             icon,
             gap: 0.0,
             text: typescale::LABEL_LARGE,
-            corner,
-            pressed,
-            selected,
+            corners: [corner, pressed, selected],
+            inner: self.size.inner(self.split),
+            hover_inner: self.split,
             outline,
             elevation: [0.0, 0.0],
         }
@@ -140,6 +142,7 @@ impl IconButton {
             size: ButtonSize::default(),
             shape: ButtonShape::default(),
             width: IconWidth::default(),
+            split: false,
         });
         pressable::add(parent, |fonts, theme| {
             let mut control = PressableControl::new(fonts, theme, look, label)?;

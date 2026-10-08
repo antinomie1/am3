@@ -1,40 +1,15 @@
 //! Buttons: toggles flip and report, sizes relayout and restyle the label,
 //! fixed-width components keep their width, and focus shows only after keys.
 
-use std::{cell::RefCell, rc::Rc, sync::Arc};
+mod common;
+
+use std::{cell::RefCell, rc::Rc};
+
+use common::{click, ui};
 
 use aegle_controls::KeyInput;
-use aegle_text::{Blob, GenericFamily, TextSystem};
-use aegle_ui::{Key, Modifiers, Point, PointerId, PointerKind, Result, Size, Ui};
-use am3::{Button, ButtonSize, ButtonStyle, Fab, IconButton, IconStyle, Mode, icons};
-
-fn ui() -> Result<Ui> {
-    let theme = am3::theme(aegle_ui::Color::rgb(0x67, 0x50, 0xA4), Mode::Light);
-    let mut fonts = TextSystem::new();
-    let font = include_bytes!("../../aegle/tests/assets/aegle-test-cjk.otf");
-    let families = fonts.register_fonts(Blob::new(Arc::new(font.as_slice())))?;
-    let ids = families.iter().map(|(id, _)| *id);
-    fonts
-        .collection_mut()
-        .set_generic_families(GenericFamily::SansSerif, ids);
-    let ui = Ui::with_fonts(Rc::new(RefCell::new(fonts)), theme)?;
-    ui.resize(Size::new(400.0, 400.0))?;
-    Ok(ui)
-}
-
-fn click(ui: &Ui, node: &aegle_ui::Node) -> Result {
-    let b = node.bounds()?;
-    let at = Point::new(
-        b.origin.x + b.size.width / 2.0,
-        b.origin.y + b.size.height / 2.0,
-    );
-    for kind in [PointerKind::Down { clicks: 1 }, PointerKind::Up] {
-        ui.pointer(PointerId(1), kind, at, Modifiers::default())?;
-    }
-    ui.dispatch_callbacks()?;
-    ui.refresh()?;
-    Ok(())
-}
+use aegle_ui::{Key, Modifiers, Result, Size};
+use am3::{Button, ButtonSize, ButtonStyle, Fab, IconButton, IconStyle, icons};
 
 #[test]
 fn toggle_buttons_flip_and_report() -> Result {

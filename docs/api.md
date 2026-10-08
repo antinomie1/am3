@@ -68,3 +68,28 @@ f.set_extended(false)?;                   // 收起为图标
 所有按钮类句柄共享 `set_text`、`text`、`set_icon`、`set_trailing_icon`、`set_selected`、`selected`、`activate`、`on_click`、`clear_on_click`，以及 Aegle 的 `Node` 方法（`set_enabled`、`focus`、`set_background` 等，经 `Deref`）。切换按钮激活时翻转选中并报告 `Action::Change`，`on_click` 回调同样收到。无障碍角色为 Button，切换按钮带 toggled 状态。
 
 颜色来自皮肤，几何来自规格：应用改颜色用 Aegle 样式或皮肤，改尺寸用 am3 的尺寸枚举。固定宽度的控件（图标按钮、FAB）设置明确的布局宽度，不会在列中被拉伸；内容宽度的按钮在列中按 Aegle 的 flex 规则拉伸，需要时设置 `align_items`。
+
+### 组合按钮
+
+组合控件是普通的 Aegle 行容器加若干按钮类控件，句柄经 `Deref` 得到容器：
+
+```rust
+let group = ButtonGroup::new(&parent, GroupStyle::Connected, ButtonSize::Small)?;
+let day = group.button(ButtonStyle::Tonal, "日")?;
+group.button(ButtonStyle::Tonal, "周")?;
+group.set_selection(Selection::Single)?;     // None | Single | Multiple
+
+let split = SplitButton::new(&parent, ButtonStyle::Filled, "保存")?;
+split.action().on_click(|_| Ok(()))?;
+split.menu().on_click(|m| { /* m.selected()? == Some(true) 时显示菜单 */ Ok(()) })?;
+split.set_menu_open(false)?;                  // 菜单关闭时复位
+
+let seg = SegmentedButton::new(&parent, false)?; // true 为多选
+seg.segment("日", None)?;
+let chosen: Vec<usize> = seg.selected()?;
+
+let menu = FabMenu::new(&parent, icons::add(), "新建", FabColor::PrimaryContainer)?;
+menu.item(icons::edit(), "笔记")?.on_click(|_| Ok(()))?;
+```
+
+按钮之间的协作都在控件层完成，不需要 am3 的额外状态：单选组的互斥通过 Aegle 的 `Deferred` 在输入处理后取消兄弟按钮的选中；标准组的伸展由按下的按钮经 `Deferred` 设置自己与相邻按钮的伸展目标，各自在绘制时以弹簧采样，因此不触发布局。连接组、分割按钮与分段按钮的不对称圆角用路径绘制（按尺寸与半径缓存，仅在形变动画期间重建）；路径无法作为裁剪区域，因此这些形状上的按下以均匀状态层代替圆形涟漪。

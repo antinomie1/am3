@@ -72,6 +72,22 @@ impl Ripple {
         self.released.get_or_insert(at);
     }
 
+    /// How far it has faded out, from 0 to 1.
+    fn fade(&self, now: Instant) -> f32 {
+        // Fading starts at release, but never before the ripple has grown.
+        self.released.map_or(0.0, |at| {
+            let from = at.max(self.start + GROW);
+            now.saturating_duration_since(from).as_secs_f32() / FADE.as_secs_f32()
+        })
+    }
+
+    /// The opacity of an even press layer with the ripple's timing, for
+    /// shapes a circle cannot be clipped to.
+    pub fn opacity(&self, now: Instant) -> f32 {
+        let grown = now.saturating_duration_since(self.start).as_secs_f32() / GROW.as_secs_f32();
+        crate::tokens::state::PRESSED * (grown * 3.0).min(1.0) * (1.0 - self.fade(now)).max(0.0)
+    }
+
     /// Paints the ripple in `color` at the pressed state-layer opacity,
     /// inside the caller's clip; returns whether it is still visible.
     pub fn paint(
@@ -83,11 +99,7 @@ impl Ripple {
     ) -> Result<bool> {
         let grown = now.saturating_duration_since(self.start).as_secs_f32() / GROW.as_secs_f32();
         let grow = 1.0 - (1.0 - grown.min(1.0)).powi(3);
-        // Fading starts at release, but never before the ripple has grown.
-        let fade = self.released.map_or(0.0, |at| {
-            let from = at.max(self.start + GROW);
-            now.saturating_duration_since(from).as_secs_f32() / FADE.as_secs_f32()
-        });
+        let fade = self.fade(now);
         if fade >= 1.0 {
             return Ok(false);
         }

@@ -2,8 +2,8 @@
 
 use aegle_ui::{Container, Result};
 use am3::{
-    Button, ButtonShape, ButtonSize, ButtonStyle, Fab, FabColor, FabSize, IconButton, IconStyle,
-    IconWidth, icons,
+    Button, ButtonGroup, ButtonShape, ButtonSize, ButtonStyle, Fab, FabColor, FabMenu, FabSize,
+    GroupStyle, IconButton, IconStyle, IconWidth, SegmentedButton, Selection, SplitButton, icons,
 };
 
 use crate::{Setup, hover, press};
@@ -14,6 +14,15 @@ fn styles(host: &Container) -> Result<aegle_ui::Container> {
     let row = host.row()?;
     row.set_gap(8.0)?;
     Ok(row)
+}
+
+fn menu(host: &Container) -> Result<FabMenu> {
+    host.set_align_items(Some(aegle_ui::Align::End))?;
+    let m = FabMenu::new(host, icons::add(), "Create", FabColor::PrimaryContainer)?;
+    m.item(icons::mail(), "Message")?;
+    m.item(icons::calendar(), "Event")?;
+    m.item(icons::edit(), "Note")?;
+    Ok(m)
 }
 
 pub(crate) const ALL: &[Shot] = &[
@@ -186,6 +195,90 @@ pub(crate) const ALL: &[Shot] = &[
             }),
             ("extended", |_, h| {
                 Fab::extended(h, icons::edit(), "Compose").map(drop)
+            }),
+        ],
+    ),
+    (
+        "fab-menu",
+        (220.0, 340.0),
+        &[
+            ("closed", |_, h| menu(h).map(drop)),
+            ("open", |_, h| menu(h)?.set_open(true)),
+            ("open, tertiary", |_, h| {
+                h.set_align_items(Some(aegle_ui::Align::End))?;
+                let m = FabMenu::new(h, icons::add(), "Create", FabColor::TertiaryContainer)?;
+                m.item(icons::photo(), "Photo")?;
+                m.item(icons::mic(), "Recording")?;
+                m.set_open(true)
+            }),
+        ],
+    ),
+    (
+        "button-groups",
+        (330.0, 110.0),
+        &[
+            ("standard", |_, h| {
+                let g = ButtonGroup::new(h, GroupStyle::Standard, ButtonSize::Small)?;
+                g.icon_button(IconStyle::Tonal, icons::mail(), "Mail")?;
+                g.button(ButtonStyle::Filled, "Inbox")?;
+                g.icon_button(IconStyle::Tonal, icons::star(), "Starred")?;
+                Ok(())
+            }),
+            ("standard, middle pressed", |ui, h| {
+                let g = ButtonGroup::new(h, GroupStyle::Standard, ButtonSize::Small)?;
+                g.icon_button(IconStyle::Tonal, icons::mail(), "Mail")?;
+                let b = g.button(ButtonStyle::Filled, "Inbox")?;
+                g.icon_button(IconStyle::Tonal, icons::star(), "Starred")?;
+                press(ui, &b)
+            }),
+            ("connected, single select", |_, h| {
+                let g = ButtonGroup::new(h, GroupStyle::Connected, ButtonSize::Small)?;
+                for day in ["Day", "Week", "Month"] {
+                    g.button(ButtonStyle::Tonal, day)?;
+                }
+                g.set_selection(Selection::Single)
+            }),
+        ],
+    ),
+    (
+        "split-buttons",
+        (210.0, 96.0),
+        &[
+            ("filled", |_, h| {
+                SplitButton::new(h, ButtonStyle::Filled, "Save").map(drop)
+            }),
+            ("tonal, hovered", |ui, h| {
+                let s = SplitButton::new(h, ButtonStyle::Tonal, "Save")?;
+                hover(ui, s.action())
+            }),
+            ("outlined, menu open", |_, h| {
+                let s = SplitButton::new(h, ButtonStyle::Outlined, "Save")?;
+                s.set_menu_open(true)
+            }),
+            ("elevated", |_, h| {
+                SplitButton::new(h, ButtonStyle::Elevated, "Save").map(drop)
+            }),
+        ],
+    ),
+    (
+        "segmented-buttons",
+        (300.0, 96.0),
+        &[
+            ("single select", |_, h| {
+                let s = SegmentedButton::new(h, false)?;
+                for t in ["Day", "Week", "Month"] {
+                    s.segment(t, None)?;
+                }
+                Ok(())
+            }),
+            ("multi select, icons", |_, h| {
+                let s = SegmentedButton::new(h, true)?;
+                s.segment("Walk", Some(icons::person()))?
+                    .set_selected(Some(true))?;
+                s.segment("Ride", Some(icons::home()))?;
+                s.segment("Fly", Some(icons::send()))?
+                    .set_selected(Some(true))?;
+                Ok(())
             }),
         ],
     ),

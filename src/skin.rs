@@ -2,7 +2,7 @@
 //! colors, the focus ring and elevation shadows.
 
 use aegle_ui::{
-    Appearance, Color, Rect, Result, Size, Theme, VisualState,
+    Appearance, Color, Rect, Result, Theme, VisualState,
     scene::{RoundedRect, SceneBuilder},
 };
 
@@ -105,21 +105,21 @@ pub(crate) fn pressable(theme: &Theme, state: VisualState, s: &Scheme, rest: Pai
 }
 
 /// Material's focus indicator: 3 dp in the focus color, 2 dp outside the
-/// control's shape.
+/// control's shape `rect`.
 pub(crate) fn focus_ring(
     builder: &mut SceneBuilder,
-    size: Size,
+    rect: Rect,
     radius: f32,
     color: Color,
 ) -> Result {
     const OFFSET: f32 = 2.0 + 1.5;
-    let rect = Rect::new(
-        -OFFSET,
-        -OFFSET,
-        size.width + 2.0 * OFFSET,
-        size.height + 2.0 * OFFSET,
+    let ring = Rect::new(
+        rect.origin.x - OFFSET,
+        rect.origin.y - OFFSET,
+        rect.size.width + 2.0 * OFFSET,
+        rect.size.height + 2.0 * OFFSET,
     );
-    builder.stroke(RoundedRect::new(rect, radius + OFFSET)?, color, 3.0)?;
+    builder.stroke(RoundedRect::new(ring, radius + OFFSET)?, color, 3.0)?;
     Ok(())
 }
 
@@ -142,31 +142,6 @@ pub(crate) fn shadow(
             RoundedRect::new(moved, shape.radius())?,
             shadow.color,
             shadow.blur,
-        )?;
-    }
-    Ok(())
-}
-
-/// The outline of `shape`, inside it.
-pub(crate) fn outline(
-    builder: &mut SceneBuilder,
-    shape: RoundedRect,
-    color: Color,
-    width: f32,
-) -> Result {
-    if width > 0.0 && !clear(color) {
-        let r = shape.rect();
-        let half = width * 0.5;
-        let inner = Rect::new(
-            r.origin.x + half,
-            r.origin.y + half,
-            (r.size.width - width).max(0.0),
-            (r.size.height - width).max(0.0),
-        );
-        builder.stroke(
-            RoundedRect::new(inner, (shape.radius() - half).max(0.0))?,
-            color,
-            width,
         )?;
     }
     Ok(())

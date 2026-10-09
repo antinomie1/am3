@@ -362,8 +362,10 @@ thread_local! {
 /// controls, 12 px medium corners.
 ///
 /// Pass the light, dark and high-contrast results to the host's themes;
-/// the host switches them with the system preference.
+/// the host switches them with the system preference. Also registers the
+/// roles' color tokens, see [`super::register_tokens`].
 pub fn theme(seed: Color, mode: Mode) -> Theme {
+    super::register_tokens();
     let s = Scheme::from_seed(seed, mode);
     Theme {
         background: s.surface,

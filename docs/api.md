@@ -28,7 +28,8 @@ impl Scheme {
     pub fn role(&self, role: Role) -> Color;
 }
 pub fn theme(seed: Color, mode: Mode) -> Theme; // 生成 Aegle 主题
-impl Role { pub fn token(self) -> Token<Color>; } // am3.color.<角色> 颜色令牌
+impl Role { pub fn token(self) -> Token<Color>; } // am3.color.<角色> 颜色令牌，多词用连字符
+pub fn register_tokens();                         // 注册全部角色令牌；theme() 与 elements() 会调用
 ```
 
 设计取舍：方案不作为 am3 的全局状态存在，而是 Aegle 主题的纯函数。主题切换、子树主题、高对比都已经由 Aegle 处理，am3 只需在绘制时由主题求方案；缓存键是主题的 accent、背景与前景三个颜色，6 项循环替换，命中时只比较 3 个 u32。

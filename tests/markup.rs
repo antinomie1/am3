@@ -133,6 +133,12 @@ fn misuse_is_reported() -> Result {
     };
     let outside = check("Column { MdTab { text: \"Lost\" } }").expect("a tab outside tabs");
     assert!(outside.contains("MdTab"), "{outside}");
+    // Role tokens are registered with the theme and elements, so markup
+    // can name them before Rust code has asked for one.
+    load(
+        &ui,
+        "Column { MdCard { background: token(\"am3.color.tertiary-container\") } }",
+    )?;
     let choice = check("Column { MdButton { style: shiny } }").expect("an unknown style");
     assert!(choice.contains("shiny"), "{choice}");
     // Icon names are checked while building.

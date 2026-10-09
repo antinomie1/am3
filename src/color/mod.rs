@@ -55,3 +55,12 @@ impl Role {
             .expect("am3 token names are valid and unique")
     }
 }
+
+/// Registers the color token of every role on this thread, so markup can
+/// name one with `token("am3.color.primary-container")` before Rust code
+/// has asked for it. [`theme`] and [`crate::elements`] call it.
+pub fn register_tokens() {
+    for role in Role::ALL {
+        role.token();
+    }
+}

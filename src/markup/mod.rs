@@ -27,8 +27,10 @@ use crate::{Icon, Role, icons};
 
 /// Every am3 element, to load markup with:
 /// `Program::load_with(path, &am3::elements())`. Combine with other
-/// libraries' elements through [`Elements::with`].
+/// libraries' elements through [`Elements::with`]. Also registers the color
+/// tokens markup names, see [`crate::color::register_tokens`].
 pub fn elements() -> Elements {
+    crate::color::register_tokens();
     navigation::add(inputs::add(containment::add(actions::add(Elements::new()))))
 }
 

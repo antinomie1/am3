@@ -60,6 +60,18 @@ impl Date {
         Self { year, month, day }
     }
 
+    /// Parses an ISO 8601 date such as `2026-08-17`.
+    pub fn parse(text: &str) -> Option<Self> {
+        let mut parts = text.splitn(3, '-');
+        let mut next = || parts.next();
+        let (year, month, day) = (
+            next()?.parse().ok()?,
+            next()?.parse().ok()?,
+            next()?.parse().ok()?,
+        );
+        Self::new(year, month, day)
+    }
+
     /// Today in UTC, from the system clock.
     pub fn today() -> Self {
         let seconds = std::time::SystemTime::now()
@@ -166,10 +178,19 @@ fn retitle(state: &mut State, id: NodeId) -> Result {
 /// A modal or docked date picker.
 #[derive(Clone)]
 pub struct DatePicker {
+    /// The surface of a docked picker, a modal one's dialog content.
+    root: Container,
     calendar: Node,
     dialog: Option<Dialog>,
     /// A modal picker's headline, showing the selection.
     headline: Option<Text>,
+}
+
+impl std::ops::Deref for DatePicker {
+    type Target = Container;
+    fn deref(&self) -> &Container {
+        &self.root
+    }
 }
 
 impl DatePicker {
@@ -197,6 +218,7 @@ impl DatePicker {
         Divider::new(&dialog)?;
         let calendar = Self::grid(&dialog)?;
         let picker = Self {
+            root: (*dialog).clone(),
             calendar,
             dialog: Some(dialog.clone()),
             headline: Some(headline),
@@ -231,6 +253,7 @@ impl DatePicker {
         let surface = surface::add(parent, control, 12.0)?;
         let calendar = Self::grid(&surface)?;
         Ok(Self {
+            root: surface,
             calendar,
             dialog: None,
             headline: None,
@@ -271,6 +294,7 @@ impl DatePicker {
         })?;
         calendar.change(retitle)?;
         let picker = Self {
+            root: parent.clone(),
             calendar: calendar.clone(),
             dialog: None,
             headline: None,

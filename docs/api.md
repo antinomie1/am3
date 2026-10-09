@@ -242,3 +242,41 @@ carousel.item(true)?.on_click(|_| Ok(()))?;
 `TextField` 不是新的文本控件：`FieldControl` 包着 `aegle_controls::TextField`（编辑、输入法、选择、无障碍），只负责外框、标签、图标、辅助文字与计数的绘制和尺寸。为此 Aegle 增加了两个通用接口（Aegle 提交 14d23fe）：`Control::text_viewport`，让外框控件声明编辑器实际可用的文字区域（光标滚动据此保持在图标之间）；`Editor::changes()`，不清空地读取编辑器的变更，外框据此报告改变并更新计数。
 
 日期与时间选择器各是一个绘制整块网格或表盘的控件（`CalendarControl`、`DialControl`），而不是几十个按钮节点：命中、光标与范围带都在控件内计算，节点数与日期多少无关。`Date` 是不依赖外部库的公历日期（`days`/`from_days` 为距 1970-01-01 的天数），`Date::new` 是 `const fn`，可写常量。搜索视图是 Aegle 的 `Popup`，轮播是一个视口控件，把滚轮的竖向分量转为横向滚动。
+
+## 标记元素
+
+全部控件都有标记元素，名字为 `Md` 加控件名。它们就是普通的 `element!` 定义，和任何第三方库同一条路径：编译期 `ui!` 经 `use am3::MdButton;` 找到规格（该导入同时带来标记类型与隐藏的规格宏），运行时加载用 `am3::elements()` 注册全部元素，可与其他库的 `Elements` 合并。`id` 字段的类型是 am3 的句柄（`MdTextField` 的 `id` 是 `am3::TextField`），处理块里的 `self.checked` 等字段来自 `get` 声明。
+
+| 元素 | 构造属性 | 可绑定属性 | 事件 / `self` 字段 |
+| --- | --- | --- | --- |
+| `MdButton` | `text`、`style`（filled/tonal/outlined/elevated/text） | `text`、`style`、`size`、`square`、`icon`、`selected` | `clicked` / `selected` |
+| `MdIconButton` | `icon`、`label`、`style`（standard/filled/tonal/outlined） | `icon`、`style`、`size`、`width`、`selected`、`badge` | `clicked` / `selected` |
+| `MdFab` | `icon`、`label`、`extended` | `extended`、`size`、`color` | `clicked` |
+| `MdFabMenu` › `MdFabMenuItem` | `icon`、`label`、`color` › `icon`、`text` | `open` | 菜单项 `clicked` / `open` |
+| `MdButtonGroup` › `MdGroupButton` | `style`、`size`、`selection` › `text`、`style` | 按钮 `selected` | 按钮 `clicked` / `selected` |
+| `MdSplitButton` | `text`、`style` | `size`、`menu_open` | `clicked`、`menu` |
+| `MdSegmentedButton` › `MdSegment` | `multiple` › `text`、`icon` | 分段 `selected` | 分段 `clicked` / `selected`（按钮的 `selected` 为首个选中序号） |
+| `MdCheckbox`、`MdRadio`、`MdSwitch` | `text`、`checked` | `text`、`checked`；复选框 `mixed`、`error`；开关 `icons` | `changed` / `checked` |
+| `MdSlider` | `min`、`max`、`value`、`step`、`ticks` | `value`、`size`、`centered` | `changed` / `value` |
+| `MdChip` | `text`、`kind`（assist/filter/input/suggestion） | `text`、`icon`、`elevated`、`selected` | `clicked`、`removed` / `selected` |
+| `MdProgress`、`MdLoadingIndicator` | `circular`、`indeterminate`；`contained` | `value`、`wavy` | |
+| `MdText`、`MdIcon`、`MdDivider` | `text`、`typescale`、`color`；`icon`、`size`、`color`；`vertical` | `text`、`color`；`icon`、`color` | `text` |
+| `MdCard` | `style`、`clickable` | | `clicked` |
+| `MdList` › `MdListItem` | › `headline`、`clickable`、`supporting`、`leading`、`trailing`、`trailing_text` | | 列表项 `clicked` |
+| `MdDialog` › `MdDialogAction` | `headline`、`icon` › `text` | `headline`、`open` | `dismissed`；操作 `clicked` |
+| `MdSheet` | `kind`（bottom/side/standard_bottom/standard_side）、`headline` | `open` | `dismissed` |
+| `MdSnackbar` › `MdSnackbarAction` | `text`、`closable`、`duration`（毫秒，0 为不自动关闭） › `text` | `text`、`open` | `timeout`；操作 `clicked` |
+| `MdNavigationBar`、`MdNavigationRail`、`MdNavigationDrawer` › `MdNavItem` | 栏杆 `expanded`；抽屉 `modal`、`headline` › `icon`、`text` | 栏杆 `expanded`；抽屉 `open`；目的地 `selected`、`selected_icon`、`badge` | 目的地 `clicked` / `selected`（容器为选中序号） |
+| `MdTabs` › `MdTab` | `style`（primary/secondary） › `text`、`icon` | 标签 `selected` | 标签 `clicked` / `selected` |
+| `MdTopAppBar`、`MdBottomAppBar`、`MdToolbar` › `MdAction` | `title`、`style`、`subtitle`；工具栏 `floating`、`vertical`、`vibrant` › `icon`、`label`、`navigation` | `title`、`scrolled`；操作 `icon` | 操作 `clicked` |
+| `MdTextField` | `label`、`style`（filled/outlined）、`multiline` | `text`、`placeholder`、`supporting`、`error`、`leading_icon`、`trailing_icon`、`clearable`、`counter`、`password`、`read_only` | `changed` / `text` |
+| `MdSearch` | `placeholder` | `trailing_icon` | `changed` / `text`；子元素放入搜索视图 |
+| `MdDatePicker` | `modal`、`range` | `selected`（ISO 8601）、`open` | `changed`、`confirmed` / `selected`、`end` |
+| `MdTimePicker` | `modal`、`h24` | `hour`、`minute`、`h24`、`open` | `changed`、`confirmed` / `hour`、`minute` |
+| `MdCarousel` › `MdCarouselItem` | `item_width`、`height` › `clickable` | | 项目 `clicked` |
+
+`›` 表示父子元素：子元素只能写在父元素内（`parent` 约束在挂载前检查），`MdNavItem` 与 `MdAction` 可用于三种容器，放错位置时构建失败。选项属性写蛇形命名的标识符；图标按 `icons` 中的名称写字符串（`icons::named`），颜色按角色名写（`"on_surface_variant"`），这两者在构建时检查。`badge` 为 -1 显示小圆点、0 隐藏、正数显示计数。
+
+子元素需要父组件的句柄（标签页要加到 `Tabs`，导航目的地要加到栏、栏杆或抽屉）。标记引擎只把父元素的容器节点交给子元素，所以 am3 在 `State::ext` 里按节点记录这些组合句柄（弱引用节点，不形成环），由 `removed` 钩子在节点删除时清除；标记设置的徽章同样按节点复用，绑定反复更新时不叠加装饰器。
+
+菜单与富工具提示锚定在另一个控件上，暂无标记元素，用 Rust 句柄创建；导航栏杆顶部的 FAB 也只能在 Rust 中放入 `header()`。

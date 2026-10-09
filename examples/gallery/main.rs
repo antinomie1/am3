@@ -10,6 +10,7 @@ mod inputs;
 mod navigation;
 mod shots;
 mod surfaces;
+mod themes;
 
 use std::{
     cell::RefCell,
@@ -34,7 +35,7 @@ use am3::Mode;
 
 const SCALE: f32 = 2.0;
 /// The seed of the previews: Material's baseline purple.
-const SEED: Color = Color::rgb(0x67, 0x50, 0xA4);
+pub(crate) const SEED: Color = Color::rgb(0x67, 0x50, 0xA4);
 
 /// Builds one cell's content into `host` and puts it into the shown state.
 pub(crate) type Setup = fn(&Ui, &Container) -> Result;
@@ -217,6 +218,7 @@ fn main() -> Result {
         .chain(surfaces::SURFACES)
         .chain(navigation::NAVIGATION)
         .chain(inputs::INPUTS)
+        .chain(themes::THEMES)
     {
         shot(&fonts, dir, name, *size, cells)?;
     }

@@ -48,6 +48,13 @@ pub struct Snackbar {
     text: Text,
 }
 
+impl std::ops::Deref for Snackbar {
+    type Target = Container;
+    fn deref(&self) -> &Container {
+        &self.surface
+    }
+}
+
 impl Snackbar {
     /// Creates a hidden snackbar showing `text`, in the theme of `owner`.
     pub fn new(owner: &Node, text: &str) -> Result<Self> {

@@ -147,8 +147,17 @@ fn show_mode(state: &mut State, dial: NodeId) -> Result {
 /// A time picker.
 #[derive(Clone)]
 pub struct TimePicker {
+    /// The surface of an inline picker, a modal one's dialog content.
+    root: Container,
     dial: Node,
     dialog: Option<Dialog>,
+}
+
+impl std::ops::Deref for TimePicker {
+    type Target = Container;
+    fn deref(&self) -> &Container {
+        &self.root
+    }
 }
 
 impl TimePicker {
@@ -242,7 +251,11 @@ impl TimePicker {
                 .push((id, [hour.id, minute.id, am.id, pm.id]));
             sync(state, id)
         })?;
-        let picker = Self { dial, dialog: None };
+        let picker = Self {
+            root: parent.clone(),
+            dial,
+            dialog: None,
+        };
         for (button, mode) in [(&hour, Mode::Hour), (&minute, Mode::Minute)] {
             let p = picker.clone();
             button.on_click(move |_| p.update(|c| c.mode = mode))?;

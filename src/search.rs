@@ -34,6 +34,13 @@ pub struct Search {
     results: Container,
 }
 
+impl std::ops::Deref for Search {
+    type Target = TextField;
+    fn deref(&self) -> &TextField {
+        &self.bar
+    }
+}
+
 impl Search {
     /// Appends a search bar showing `placeholder` while empty, 360 to
     /// 720 dp wide.

@@ -7,6 +7,10 @@
 //! themes and any subtree theme override restyle the controls; motion uses
 //! Material's spring tokens through Aegle transitions.
 
+// The counting allocator of the `thousand` example needs unsafe; the
+// library never does.
+#![forbid(unsafe_code)]
+
 pub mod color;
 pub mod icon;
 pub mod tokens;
@@ -28,6 +32,7 @@ mod group;
 mod icon_button;
 mod list;
 mod loading;
+mod markup;
 mod menu;
 mod navigation;
 mod overlay;
@@ -66,6 +71,7 @@ pub use icon::{Icon, icons};
 pub use icon_button::{IconButton, IconStyle, IconWidth};
 pub use list::{List, ListItem};
 pub use loading::{LoadingControl, LoadingIndicator};
+pub use markup::*;
 pub use menu::Menu;
 pub use navigation::{NavItem, NavItemControl, NavigationBar, NavigationDrawer, NavigationRail};
 pub use pressable::PressableControl;
@@ -162,6 +168,7 @@ fn removed(state: &mut aegle_ui::State, id: aegle_ui::NodeId) {
     overlay::removed(state, id);
     tabs::removed(state, id);
     time::removed(state, id);
+    markup::removed(state, id);
 }
 
 fn key(state: &mut aegle_ui::State, key: &aegle_ui::KeyInput<'_>) -> aegle_ui::Result<bool> {

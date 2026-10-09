@@ -1,9 +1,10 @@
 //! Buttons: toggles flip and report, sizes relayout and restyle the label,
-//! fixed-width components keep their width, and focus shows only after keys.
+//! fixed-width components keep their width, focus shows only after keys,
+//! and a hover spring settles to an idle screen.
 
 mod common;
 
-use std::{cell::RefCell, rc::Rc};
+use std::{cell::RefCell, rc::Rc, time::Duration};
 
 use common::{click, ui};
 
@@ -87,5 +88,34 @@ fn focus_shows_after_keys_only() -> Result {
         repeat: false,
     })?;
     assert!(button.visual_state()?.focused);
+    Ok(())
+}
+
+#[test]
+fn hovering_settles_to_idle() -> Result {
+    let ui = ui()?;
+    let button = Button::new(&ui.root(), ButtonStyle::Elevated, "Lift")?;
+    ui.refresh()?;
+    let start = std::time::Instant::now();
+    let at = common::center(&button)?;
+    for (kind, second) in [
+        (aegle_ui::PointerKind::Move, 1),
+        (aegle_ui::PointerKind::Leave, 2),
+    ] {
+        ui.pointer(
+            aegle_ui::PointerId(1),
+            kind,
+            at,
+            aegle_ui::Modifiers::default(),
+        )?;
+        ui.refresh()?;
+        assert!(ui.wants_frames()?, "the elevation springs");
+        // Frames until the spring has long finished.
+        for frame in 1..=10 {
+            ui.run_frame(start + Duration::from_millis(second * 1000 + frame * 100))?;
+            ui.refresh()?;
+        }
+        assert!(!ui.wants_frames()?, "no frames once settled");
+    }
     Ok(())
 }

@@ -20,6 +20,28 @@ save.set_icon(Some(icons::check()))?;
 save.on_click(|_| Ok(()))?;
 ```
 
+标记语言里同样可以使用全部控件，元素名带 `Md` 前缀，与 Aegle 内置元素并存：
+
+```text
+Column {
+    state page: int = 0
+    MdTopAppBar { title: "收件箱"; MdAction { icon: "menu"; label: "菜单"; navigation: true } }
+    MdTextField { id: name; label: "姓名"; style: outlined }
+    MdButton { text: "保存"; style: tonal; on clicked { page = 1 } }
+    MdNavigationBar {
+        MdNavItem { icon: "mail"; text: "邮件"; badge: 3; on clicked { page = 0 } }
+        MdNavItem { icon: "chat"; text: "聊天"; on clicked { page = 1 } }
+    }
+}
+```
+
+```rust
+use aegle::loader::Column;
+use am3::{MdAction, MdButton, MdNavItem, MdNavigationBar, MdTextField, MdTopAppBar};
+let view = aegle::ui!(&root, "inbox.aegle")?;          // 编译期检查，view.name 是 am3::TextField
+let view = aegle::loader::Program::load_with("inbox.aegle", &am3::elements())?.build(&root)?; // 运行时加载
+```
+
 - [控件预览](docs/components.md)：每个控件在浅色与深色主题下的真实渲染截图（`cargo run --example gallery` 生成）。
 - [API 设计](docs/api.md)：配色、令牌、控件句柄与扩展方式。
 - [实现状态](docs/implementation.md)：已实现内容、验证方式与性能数据。

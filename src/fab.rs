@@ -84,6 +84,7 @@ impl FabLook {
             width: (!self.extended).then_some(height),
             min_width: height,
             padding,
+            icon_padding: padding,
             icon,
             gap,
             text,

@@ -22,6 +22,18 @@ fn menu(host: &Container) -> Result<FabMenu> {
     Ok(m)
 }
 
+/// Indicators started apart, so the settled frame shows three shapes.
+fn loading(ui: &aegle_ui::Ui, host: &Container, contained: bool) -> Result {
+    let row = styles(host)?;
+    let start = std::time::Instant::now();
+    for delay in [0.1, 0.75, 1.4] {
+        ui.run_frame(start + std::time::Duration::from_secs_f32(delay))?;
+        LoadingIndicator::new(&row, contained)?;
+        ui.refresh()?;
+    }
+    Ok(())
+}
+
 pub(crate) const ALL: &[Shot] = &[
     (
         "buttons",
@@ -384,6 +396,61 @@ pub(crate) const ALL: &[Shot] = &[
             ("XL", |_, h| {
                 Slider::new(h, 0.0, 1.0, 0.5)?.set_size(SliderSize::ExtraLarge)
             }),
+        ],
+    ),
+    (
+        "chips",
+        (190.0, 96.0),
+        &[
+            ("assist", |_, h| {
+                Chip::new(h, ChipKind::Assist, "Add to calendar")?.set_icon(Some(icons::calendar()))
+            }),
+            ("assist, elevated", |_, h| {
+                let c = Chip::new(h, ChipKind::Assist, "Directions")?;
+                c.set_icon(Some(icons::send()))?;
+                c.set_elevated(true)
+            }),
+            ("filter", |_, h| {
+                Chip::new(h, ChipKind::Filter, "Vegan").map(drop)
+            }),
+            ("filter, selected", |_, h| {
+                Chip::new(h, ChipKind::Filter, "Vegan")?.set_selected(Some(true))
+            }),
+            ("input", |_, h| {
+                Chip::new(h, ChipKind::Input, "Ada")?.set_icon(Some(icons::person()))
+            }),
+            ("suggestion", |_, h| {
+                Chip::new(h, ChipKind::Suggestion, "Sounds good").map(drop)
+            }),
+        ],
+    ),
+    (
+        "progress",
+        (270.0, 110.0),
+        &[
+            ("linear 40 %", |_, h| {
+                Progress::linear(h, Some(0.4)).map(drop)
+            }),
+            ("linear, wavy", |_, h| {
+                Progress::linear(h, Some(0.6))?.set_wavy(true)
+            }),
+            ("linear, indeterminate", |_, h| {
+                Progress::linear(h, None).map(drop)
+            }),
+            ("circular", |_, h| {
+                let row = styles(h)?;
+                Progress::circular(&row, Some(0.3))?;
+                Progress::circular(&row, Some(0.7))?.set_wavy(true)?;
+                Progress::circular(&row, None).map(drop)
+            }),
+        ],
+    ),
+    (
+        "loading",
+        (300.0, 100.0),
+        &[
+            ("loading indicator", |ui, h| loading(ui, h, false)),
+            ("contained", |ui, h| loading(ui, h, true)),
         ],
     ),
 ];

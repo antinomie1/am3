@@ -13,11 +13,14 @@ pub mod tokens;
 
 mod anim;
 mod button;
+mod chip;
 mod fab;
 mod fab_menu;
 mod group;
 mod icon_button;
+mod loading;
 mod pressable;
+mod progress;
 mod segmented;
 mod selection;
 mod skin;
@@ -25,13 +28,16 @@ mod slider;
 mod split;
 
 pub use button::{Button, ButtonShape, ButtonSize, ButtonStyle};
+pub use chip::{Chip, ChipKind};
 pub use color::{Mode, Role, Scheme, theme};
 pub use fab::{Fab, FabColor, FabSize};
 pub use fab_menu::{FabMenu, FabMenuItem};
 pub use group::{ButtonGroup, GroupStyle, Selection};
 pub use icon::{Icon, icons};
 pub use icon_button::{IconButton, IconStyle, IconWidth};
+pub use loading::{LoadingControl, LoadingIndicator};
 pub use pressable::PressableControl;
+pub use progress::{Progress, ProgressControl};
 pub use segmented::{Segment, SegmentedButton};
 pub use selection::{Checkbox, Radio, SelectionControl, Switch};
 pub use slider::{Slider, SliderControl, SliderSize};
@@ -44,6 +50,10 @@ pub mod kinds {
         ELEVATED_BUTTON, ELEVATED_TOGGLE, FILLED_BUTTON, FILLED_TOGGLE, OUTLINED_BUTTON,
         OUTLINED_TOGGLE, TEXT_BUTTON, TONAL_BUTTON, TONAL_TOGGLE,
     };
+    pub use crate::chip::{
+        ASSIST_CHIP, ELEVATED_ASSIST_CHIP, ELEVATED_FILTER_CHIP, ELEVATED_SUGGESTION_CHIP,
+        FILTER_CHIP, INPUT_CHIP, SUGGESTION_CHIP,
+    };
     pub use crate::fab::{
         FAB_PRIMARY, FAB_PRIMARY_CONTAINER, FAB_SECONDARY, FAB_SECONDARY_CONTAINER, FAB_TERTIARY,
         FAB_TERTIARY_CONTAINER,
@@ -52,6 +62,8 @@ pub mod kinds {
         FILLED_ICON_BUTTON, FILLED_ICON_TOGGLE, OUTLINED_ICON_BUTTON, OUTLINED_ICON_TOGGLE,
         STANDARD_ICON_BUTTON, STANDARD_ICON_TOGGLE, TONAL_ICON_BUTTON, TONAL_ICON_TOGGLE,
     };
+    pub use crate::loading::{CONTAINED_LOADING_INDICATOR, LOADING_INDICATOR};
+    pub use crate::progress::PROGRESS;
     pub use crate::segmented::SEGMENT;
     pub use crate::selection::{CHECKBOX, CHECKBOX_ERROR, RADIO_BUTTON, SWITCH};
     pub use crate::slider::SLIDER;

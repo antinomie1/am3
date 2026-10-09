@@ -21,6 +21,7 @@ impl SegmentLook {
             width: None,
             min_width: 48.0,
             padding: 12.0,
+            icon_padding: 12.0,
             icon: 18.0,
             gap: 8.0,
             text: typescale::LABEL_LARGE,

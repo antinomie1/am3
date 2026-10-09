@@ -4,6 +4,7 @@
 //! geometry, the shape morphs and the elevation, which it animates itself
 //! with the expressive spatial springs.
 
+mod look;
 mod methods;
 pub(crate) mod shape;
 mod siblings;
@@ -18,6 +19,7 @@ use aegle_ui::{
     text_style,
 };
 
+pub(crate) use look::{Look, Spec};
 pub(crate) use methods::{add, pressable_methods, relook};
 use shape::{Outline, Shape};
 use siblings::{bounce, select_exclusive};
@@ -27,65 +29,8 @@ use crate::{
     anim::{Ripple, Value},
     color::alpha,
     skin,
-    tokens::{Corner, TypeStyle, motion},
+    tokens::{Corner, motion},
 };
-
-/// The geometry of one size of a pressable component.
-#[derive(Clone, Copy, Debug)]
-pub(crate) struct Spec {
-    pub height: f32,
-    /// A fixed width, as icon buttons and FABs have.
-    pub width: Option<f32>,
-    pub min_width: f32,
-    /// Space before the first and after the last content.
-    pub padding: f32,
-    pub icon: f32,
-    pub gap: f32,
-    pub text: TypeStyle,
-    /// Outer corners at rest, pressed and selected.
-    pub corners: [Corner; 3],
-    /// Corners where the control joins a neighbor, in the same states.
-    pub inner: [Corner; 3],
-    /// Hover and focus take the inner corners to their pressed shape too.
-    pub hover_inner: bool,
-    /// Outline width, scaling the skin's border width.
-    pub outline: f32,
-    /// Elevation level at rest and while hovered.
-    pub elevation: [f32; 2],
-}
-
-/// Which component a pressable control is, with its variant: this picks
-/// its kind and its [`Spec`].
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub(crate) enum Look {
-    Button(crate::button::ButtonLook),
-    Icon(crate::icon_button::IconLook),
-    Fab(crate::fab::FabLook),
-    Segment(crate::segmented::SegmentLook),
-    FabItem(crate::fab::FabColor),
-}
-
-impl Look {
-    fn kind(self, toggle: bool) -> &'static ControlKind {
-        match self {
-            Self::Button(look) => look.kind(toggle),
-            Self::Icon(look) => look.kind(toggle),
-            Self::Fab(look) => look.kind(),
-            Self::Segment(_) => &crate::segmented::SEGMENT,
-            Self::FabItem(color) => crate::fab_menu::item_kind(color),
-        }
-    }
-
-    fn spec(self) -> Spec {
-        match self {
-            Self::Button(look) => look.spec(),
-            Self::Icon(look) => look.spec(),
-            Self::Fab(look) => look.spec(),
-            Self::Segment(look) => look.spec(),
-            Self::FabItem(_) => crate::fab_menu::item_spec(),
-        }
-    }
-}
 
 /// Where a press started, before the next frame gives the ripple its time.
 #[derive(Debug)]
@@ -116,6 +61,10 @@ pub struct PressableControl {
     pub(crate) turn: bool,
     /// The label names the control without showing, as on an icon button.
     pub(crate) hide_label: bool,
+    /// An input chip: its trailing icon and Delete or Backspace remove it.
+    pub(crate) removable: bool,
+    /// The latest activation asked for removal.
+    pub(crate) removing: bool,
     /// In a standard button group: a press widens it into its neighbors.
     pub(crate) bounce: bool,
     /// How far the start and end sides reach out (or, negative, in) while
@@ -154,6 +103,8 @@ impl PressableControl {
             selected_icon: None,
             turn: false,
             hide_label: false,
+            removable: false,
+            removing: false,
             bounce: false,
             reach: [0.0; 2],
             extent: Default::default(),
@@ -199,6 +150,19 @@ impl PressableControl {
             (!self.hide_label && label > 0.0).then_some(label),
             self.trailing.as_ref().map(|_| self.spec.icon),
         ]
+    }
+
+    /// The space before the first and after the last content.
+    fn pads(&self) -> (f32, f32) {
+        let [leading, _, trailing] = self.parts();
+        let pad = |icon: Option<f32>| {
+            if icon.is_some() {
+                self.spec.icon_padding
+            } else {
+                self.spec.padding
+            }
+        };
+        (pad(leading), pad(trailing))
     }
 
     fn content_width(&self) -> f32 {
@@ -262,6 +226,32 @@ impl Control for PressableControl {
     }
     fn handle(&mut self, cx: &mut InputCx<'_>, input: Input<'_>) -> Result<Outcome> {
         let was = self.button.is_pressed();
+        if self.removable {
+            match input {
+                Input::Pointer(p) if matches!(p.kind, aegle_ui::PointerKind::Down { .. }) => {
+                    // The trailing icon and the padding beside it.
+                    let zone = self.spec.icon + 2.0 * self.spec.icon_padding;
+                    let x = if cx.rtl {
+                        p.position.x
+                    } else {
+                        cx.size.width - p.position.x
+                    };
+                    self.removing = x <= zone;
+                }
+                Input::Key(key)
+                    if key.pressed
+                        && matches!(key.key, aegle_ui::Key::Backspace | aegle_ui::Key::Delete) =>
+                {
+                    self.removing = true;
+                    return Ok(Outcome {
+                        handled: true,
+                        action: Some(Action::Activate),
+                        ..Outcome::default()
+                    });
+                }
+                _ => {}
+            }
+        }
         let mut outcome = self.button.handle(input);
         if self.button.is_pressed() && !was {
             let at = match input {
@@ -285,6 +275,12 @@ impl Control for PressableControl {
                 if self.exclusive {
                     cx.deferred.push(Box::new(select_exclusive));
                 }
+                if self.selected_icon.is_some() && self.icon.is_none() {
+                    // The selected icon appears or goes: the width changes.
+                    cx.deferred.push(Box::new(|state, id| {
+                        Ok(state.tree.mark_dirty(id, aegle_ui::Dirty::LAYOUT)?)
+                    }));
+                }
             }
         }
         if self.bounce && was != self.button.is_pressed() {
@@ -304,7 +300,8 @@ impl Control for PressableControl {
     }
     fn measure(&mut self, _: &MeasureCx<'_>) -> Result<Size> {
         let width = self.spec.width.unwrap_or_else(|| {
-            (self.content_width() + 2.0 * self.spec.padding).max(self.spec.min_width)
+            let (start, end) = self.pads();
+            (self.content_width() + start + end).max(self.spec.min_width)
         });
         Ok(Size::new(width, self.spec.height))
     }
@@ -401,7 +398,8 @@ impl Control for PressableControl {
 
         // Content, centered and mirrored right to left.
         let parts = self.parts();
-        let mut x = (size.width - self.content_width()) / 2.0;
+        let (pad_start, pad_end) = self.pads();
+        let mut x = pad_start + (size.width - self.content_width() - pad_start - pad_end) / 2.0;
         let shift = (out_right - out_left) / 2.0;
         let mut at = [None; 3];
         for (slot, width) in at.iter_mut().zip(parts) {

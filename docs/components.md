@@ -81,3 +81,21 @@ M3 Expressive 滑块：粗轨道被 4 dp 竖条手柄和两侧 6 dp 间隙分开
 五种尺寸：轨道 16（默认）/24/40/56/96 dp。
 
 ![滑块尺寸](images/slider-sizes.png)
+
+## 纸片
+
+32 dp 高、8 dp 圆角，四种用途：assist（primary 色图标）、filter（选中时填充 secondary container 并出现对勾，宽度随之变化）、input（尾随移除图标，点击该图标或按 Delete/Backspace 移除）、suggestion；除 input 外都有 elevated 变体（surface container low 与阴影，替代轮廓）。
+
+![纸片](images/chips.png)
+
+## 进度指示器
+
+线性与圆形，确定与不确定，平直与波浪（M3 Expressive）。活动指示器 primary，与 secondary container 轨道间隔 4 dp，确定进度的轨道末端有停止点；数值以标准空间弹簧滑动。波浪在两端逐渐平复并持续行进；不确定线性为两段依次扫过的条，不确定圆形为一边旋转一边伸缩的弧。
+
+![进度指示器](images/progress.png)
+
+## 加载指示器
+
+38 dp 形状在 Material 的七种形状（soft burst、9 边 cookie、五边形、pill、sunny、4 边 cookie、椭圆）之间每 0.65 s 以带回弹的曲线变形，同时旋转；contained 变体位于 48 dp primary container 圆上。减少动态效果时停在第一个形状。
+
+![加载指示器](images/loading.png)

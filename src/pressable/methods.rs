@@ -82,7 +82,8 @@ macro_rules! pressable_methods {
             /// A toggle flips on activation and reports a change; selected,
             /// it takes the selected colors and shape.
             pub fn set_selected(&self, selected: Option<bool>) -> aegle_ui::Result {
-                self.update(|c| c.selected = selected)
+                // A selected icon may change the width.
+                $crate::pressable::relook(self, |c| c.selected = selected)
             }
             /// Whether a toggle button is selected; `None` for a plain one.
             pub fn selected(&self) -> aegle_ui::Result<Option<bool>> {
@@ -93,8 +94,20 @@ macro_rules! pressable_methods {
                 self.change(|state, id| state.dispatch(id, aegle_ui::control::Input::Activate))
             }
             /// Adds a handler run on each activation, or each toggle of a
-            /// toggle button, after the input batch.
+            /// toggle button, after the input batch; an input chip's removal
+            /// is not a click.
             pub fn on_click(
+                &self,
+                mut callback: impl FnMut($handle) -> aegle_ui::Result + 'static,
+            ) -> aegle_ui::Result {
+                self.on_click_any(move |handle| {
+                    if handle.read(|c| c.removing)? {
+                        return Ok(());
+                    }
+                    callback(handle)
+                })
+            }
+            fn on_click_any(
                 &self,
                 mut callback: impl FnMut($handle) -> aegle_ui::Result + 'static,
             ) -> aegle_ui::Result {

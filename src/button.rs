@@ -141,6 +141,7 @@ impl ButtonLook {
             width: None,
             min_width: height,
             padding,
+            icon_padding: padding,
             icon,
             gap,
             text,

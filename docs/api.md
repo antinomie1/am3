@@ -115,3 +115,21 @@ price.set_range(true)?;                    // 第二个手柄：start()/set_star
 复选框、单选按钮与开关共用一个控件 `SelectionControl`，行为复用 Aegle 的 `Toggle`；单选按钮的互斥同按钮组一样经 `Deferred` 完成，方向键由 am3 安装的 `am3::HOOKS` 处理（创建单选按钮时自动安装，与 Aegle 自己的钩子并存）。皮肤槽位：`foreground` 为标签，`indicator` 为选中容器（复选框方框、单选环与点、开关轨道），`border_color` 为未选中轮廓，`background` 为状态层，`caret` 为容器上的标记（对勾、开关手柄）。
 
 滑块的每个手柄复用 Aegle 的 `Slider` 行为（指针捕获、方向键、Page、Home/End、语义增减与设值）；范围滑块按下时选较近的手柄，键盘移动最近操作的手柄，任何改变后保持起点不超过终点。程序设值时手柄以弹簧滑到新位置，拖动时直接跟手。
+
+## 纸片与指示器
+
+```rust
+let vegan = Chip::new(&parent, ChipKind::Filter, "素食")?;   // 筛选纸片是切换按钮
+let ada = Chip::new(&parent, ChipKind::Input, "Ada")?;
+ada.set_leading(Some(icons::person()))?;
+ada.on_remove(|chip| chip.remove())?;                     // 移除不算点击
+Chip::new(&parent, ChipKind::Assist, "日程")?.set_elevated(true)?;
+
+let download = Progress::linear(&parent, Some(0.4))?;
+download.set_value(Some(0.6))?;                            // None 为不确定
+download.set_wavy(true)?;
+Progress::circular(&parent, None)?;
+LoadingIndicator::new(&parent, true)?;                     // contained
+```
+
+纸片仍是 `PressableControl`：规格多了图标侧的内边距（有图标的一侧 8 dp，否则 16 dp）；筛选纸片的对勾出现或消失时，控件经 `Deferred` 让布局失效，因为宽度改变。指示器是只绘制的控件：线条与弧用圆头描边路径，波浪按 2 px 步长采样正弦；只有不确定状态、行进中的波浪与数值滑动期间请求帧。加载指示器的形状是在 48 个角度上采样的极坐标半径函数，变形即插值半径，轮廓是穿过采样点的闭合 Catmull-Rom 曲线——这是对 Material 圆角多边形变形的近似，不是逐顶点相同的实现。

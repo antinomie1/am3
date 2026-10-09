@@ -32,6 +32,11 @@ impl Paint {
         }
     }
 
+    pub fn icon(mut self, icon: Color) -> Self {
+        self.icon = icon;
+        self
+    }
+
     pub fn outlined(mut self, outline: Color) -> Self {
         self.outline = Some(outline);
         self

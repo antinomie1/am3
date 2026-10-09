@@ -77,6 +77,7 @@ impl IconLook {
             width: Some(width),
             min_width: width,
             padding: 0.0,
+            icon_padding: 0.0,
             icon,
             gap: 0.0,
             text: typescale::LABEL_LARGE,

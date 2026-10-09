@@ -1,0 +1,184 @@
+// The markup version of the showcase. The host wires the controls with an
+// `id` (theme switches, and anchors for the menus and tooltips, which have
+// no markup elements); they live in this entry document because ids can't
+// be inside components. Every other behavior is states and handlers here.
+use "buttons.aegle"
+use "selection.aegle"
+use "inputs.aegle"
+use "navigation.aegle"
+
+Window {
+    title: "am3 控件展示（标记语言）"
+    width: 1180dp
+    height: 820dp
+    state page: int = 0
+    state last: string = "无"
+    state wide: bool = false
+    state confirming: bool = false
+    state bottom: bool = false
+    state side: bool = false
+    state archived: bool = false
+    state progress: float = 0.4
+    Row {
+        padding: 16dp
+        gap: 16dp
+        align: center
+        Column {
+            grow: 1
+            MdText { text: "am3 控件展示"; typescale: title_large }
+            MdText { text: "最近操作：" + last; typescale: body_small; color: "on_surface_variant" }
+        }
+        MdSegmentedButton {
+            MdSegment { id: seed0; text: "紫" }
+            MdSegment { id: seed1; text: "青" }
+            MdSegment { id: seed2; text: "琥珀" }
+            MdSegment { id: seed3; text: "玫红" }
+        }
+        MdSwitch { id: dark; text: "深色" }
+        MdSwitch { id: contrast; text: "高对比" }
+        MdSwitch { id: reduced; text: "减少动态效果" }
+    }
+    MdDivider {}
+    Row {
+        grow: 1
+        MdNavigationRail {
+            expanded: wide
+            MdNavItem { icon: "star"; text: "按钮"; on clicked { page = 0 } }
+            MdNavItem { icon: "check"; text: "选择"; on clicked { page = 1 } }
+            MdNavItem { icon: "keyboard"; text: "输入"; on clicked { page = 2 } }
+            MdNavItem { icon: "bookmark"; text: "容器与浮层"; on clicked { page = 3 } }
+            MdNavItem { icon: "explore"; text: "导航"; on clicked { page = 4 } }
+        }
+        ScrollView {
+            grow: 1
+            padding: 24dp
+            Column { visible: page == 0; ButtonsPage { on say(text) { last = text } } }
+            Column { visible: page == 1; SelectionPage { on say(text) { last = text } } }
+            Column { visible: page == 2; InputsPage { on say(text) { last = text } } }
+            Column {
+                visible: page == 3
+                gap: 28dp
+                Section {
+                    title: "卡片"
+                    MdCard {
+                        style: elevated; width: 220dp
+                        MdText { text: "凸起卡片"; typescale: title_medium }
+                        MdText { text: "卡片把相关的内容与操作放在一起。"; color: "on_surface_variant" }
+                        MdButton { text: "操作"; on clicked { last = "凸起卡片" } }
+                    }
+                    MdCard {
+                        style: filled; width: 220dp
+                        MdText { text: "填充卡片"; typescale: title_medium }
+                        MdText { text: "卡片把相关的内容与操作放在一起。"; color: "on_surface_variant" }
+                        MdButton { text: "操作"; on clicked { last = "填充卡片" } }
+                    }
+                    MdCard {
+                        style: outlined; width: 220dp
+                        MdText { text: "描边卡片"; typescale: title_medium }
+                        MdText { text: "卡片把相关的内容与操作放在一起。"; color: "on_surface_variant" }
+                        MdButton { text: "操作"; on clicked { last = "描边卡片" } }
+                    }
+                    MdCard {
+                        style: outlined; clickable: true; width: 220dp
+                        on clicked { last = "可点击卡片" }
+                        MdText { text: "可点击卡片"; typescale: title_medium }
+                        MdText { text: "整张卡片是一个按钮。"; color: "on_surface_variant" }
+                    }
+                }
+                Section {
+                    title: "列表"
+                    MdList {
+                        width: 420dp
+                        MdListItem {
+                            headline: "Ada Lovelace"; clickable: true; supporting: "周五一起吃午饭？"
+                            leading: "person"; trailing_text: "15 分钟"; on clicked { last = "Ada Lovelace" }
+                        }
+                        MdListItem {
+                            headline: "邮件"; clickable: true; supporting: "3 封未读"
+                            leading: "mail"; trailing_text: "刚刚"; on clicked { last = "邮件" }
+                        }
+                        MdListItem {
+                            headline: "设置"; clickable: true; supporting: "声音、振动"
+                            leading: "settings"; trailing: "chevron_right"; on clicked { last = "设置" }
+                        }
+                    }
+                }
+                Section {
+                    title: "对话框、表与提示条"
+                    MdDialog {
+                        icon: "delete"; headline: "删除草稿？"; open: confirming
+                        on dismissed { confirming = false }
+                        MdText { text: "草稿会从这台设备上删除，无法恢复。"; color: "on_surface_variant" }
+                        MdDialogAction { text: "取消"; on clicked { confirming = false } }
+                        MdDialogAction { text: "删除"; on clicked { confirming = false; last = "删除草稿" } }
+                    }
+                    MdButton { text: "对话框"; style: tonal; on clicked { confirming = true } }
+                    MdSheet {
+                        kind: bottom; open: bottom
+                        on dismissed { bottom = false }
+                        MdList {
+                            background: #00000000
+                            MdListItem { headline: "分享"; clickable: true; leading: "share"; on clicked { bottom = false; last = "分享" } }
+                            MdListItem { headline: "下载"; clickable: true; leading: "download"; on clicked { bottom = false; last = "下载" } }
+                            MdListItem { headline: "删除"; clickable: true; leading: "delete"; on clicked { bottom = false; last = "删除" } }
+                        }
+                    }
+                    MdButton { text: "底部表"; style: tonal; on clicked { bottom = true } }
+                    MdSheet {
+                        kind: side; headline: "筛选"; open: side; gap: 12dp
+                        on dismissed { side = false }
+                        MdCheckbox { text: "未读"; checked: true }
+                        MdCheckbox { text: "星标" }
+                        MdCheckbox { text: "有附件"; checked: true }
+                    }
+                    MdButton { text: "侧边表"; style: tonal; on clicked { side = true } }
+                    // Closed by its close button, the snackbar leaves
+                    // `archived` set; clearing it first shows it every time.
+                    MdSnackbar {
+                        text: "邮件已归档"; closable: true; open: archived
+                        on timeout { archived = false }
+                        MdSnackbarAction { text: "撤销"; on clicked { archived = false; last = "撤销归档" } }
+                    }
+                    MdButton { text: "提示条"; style: tonal; on clicked { archived = false; archived = true } }
+                }
+                Column {
+                    gap: 12dp
+                    MdText { text: "菜单与工具提示"; typescale: title_medium }
+                    Row {
+                        gap: 12dp
+                        wrap: wrap
+                        align: center
+                        MdButton { id: menu; text: "编辑"; style: outlined; icon: "edit" }
+                        MdSplitButton { id: split; text: "保存" }
+                        MdIconButton { id: tooltip; icon: "bookmark"; label: "书签" }
+                        MdIconButton { id: rich; icon: "info"; label: "说明" }
+                    }
+                }
+                Section {
+                    title: "徽章"
+                    MdIconButton { icon: "mail"; label: "邮件"; badge: -1 }
+                    MdIconButton { icon: "notifications"; label: "通知"; badge: 3 }
+                    MdIconButton { icon: "chat"; label: "聊天"; style: tonal; badge: 1200 }
+                }
+                Section {
+                    title: "进度指示器"
+                    Column {
+                        gap: 16dp
+                        width: 420dp
+                        MdProgress { value: progress }
+                        MdProgress { value: progress; wavy: true }
+                        MdSlider { min: 0; max: 1; value: 0.4; on changed { progress = self.value } }
+                        MdProgress { indeterminate: true }
+                    }
+                    MdProgress { circular: true; indeterminate: true }
+                    MdLoadingIndicator {}
+                    MdLoadingIndicator { contained: true }
+                }
+            }
+            Column {
+                visible: page == 4
+                NavigationPage { on say(text) { last = text }; on expand(on) { wide = on } }
+            }
+        }
+    }
+}

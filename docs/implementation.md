@@ -17,6 +17,8 @@
 - 标记元素：全部控件的 `Md*` 元素（`src/markup/`，见 [API 设计](api.md#标记元素)）与 `am3::elements()`。`tests/markup.rs` 经运行时 loader 构建一个含应用栏、标签页、文本框、滑块、卡片、列表、分段按钮、纸片、复选框、日期与时间选择器、轮播、导航栏与对话框的界面：状态绑定到文本框与标签选中、处理块写状态、子元素经父组件创建、`id` 取得 am3 句柄类型；点导航目的地切换页面与标签，按钮打开绑定的对话框，Escape 关闭后 `dismissed` 写回状态；放错父元素与未知选项在挂载前报错，未知图标名在构建时报错。编译期 `ui!` 路径在一个依赖 `aegle`（markup feature）与 am3 的独立 crate 中验证：`id` 字段为 `am3::Tabs`/`am3::TextField`，绑定与处理块工作，错误的选项值是带文件、行、列的编译错误。
 - 主题切换：`tests/theming.rs` 在同一界面上依次切换两个种子色 × 四种模式（浅、深、浅高对比、深高对比），按钮、卡片、导航栏、文本框描边、开关轨道与纸片描边都等于该主题的方案颜色，布局不变，文本框内容保留；子树局部深色主题与窗口浅色并存，换窗口种子色不影响该子树；绑定 `am3.color.*` 令牌的节点随主题更新。预览中的 `color-schemes.png` 展示三个种子色与高对比模式。
 - 预览：`examples/gallery` 生成 `docs/images/*.png`，已逐张目视检查浅色与深色。
+- 交互展示：`examples/showcase` 是工作区中的独立包 `am3-showcase`（作为 am3 的 dev-dependency，`aegle` 门面会让 `element!` 的展开路径指向 `::aegle::loader`，库本身因此无法编译）。原生窗口里用导航栏杆分为按钮、选择、输入、容器与浮层、导航五页；顶部的种子色分段按钮与深色、高对比开关经 `Window::set_theme` 换主题，减少动态效果开关经 `Window::set_reduced_motion`，初值取系统偏好。默认用 Rust API 构建，`--markup` 用 `ui!` 编译 `showcase.aegle` 及其导入的页面组件；两条路径把同一组句柄交给 `shell::wire`，菜单、分割按钮菜单与两种工具提示（没有标记元素）也在那里挂到 `id` 句柄上。在 Windows 11 上运行两个版本并截图核对：两者首屏一致，深色与种子色切换、翻页、对话框、模态日期选择器正常。标记版本中模态日期/时间选择器、抽屉与提示条被“取消”、scrim 或关闭按钮关上时不写回 `open` 状态，打开按钮因此先清再设该状态。
+- 颜色令牌注册：`color::register_tokens` 注册全部角色令牌，`theme()` 与 `elements()` 调用它，所以标记语言的 `token("am3.color.…")` 不再依赖 Rust 代码先调用过 `Role::token`（此前标记版本展示因此加载失败）；`tests/markup.rs` 覆盖。
 
 ## 性能
 

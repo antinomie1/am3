@@ -42,7 +42,8 @@ let view = aegle::ui!(&root, "inbox.aegle")?;          // 编译期检查，view
 let view = aegle::loader::Program::load_with("inbox.aegle", &am3::elements())?.build(&root)?; // 运行时加载
 ```
 
-- [控件预览](docs/components.md)：每个控件在浅色与深色主题下的真实渲染截图（`cargo run --example gallery` 生成）。
+- 交互展示：`cargo run -p am3-showcase` 打开原生窗口（Windows 或 Linux Wayland），用导航栏杆分页展示全部控件，都可以操作；顶部切换种子色、深色、高对比与减少动态效果。加 `-- --markup` 则用标记语言（[`examples/showcase/showcase.aegle`](examples/showcase/showcase.aegle)）构建同一界面。
+- [控件截图](docs/components.md)：每个控件在浅色与深色主题下的静态渲染截图（`cargo run --example gallery` 无窗口生成）。
 - [API 设计](docs/api.md)：配色、令牌、控件句柄与扩展方式。
 - [实现状态](docs/implementation.md)：已实现内容、验证方式与性能数据。
 
@@ -54,7 +55,7 @@ let view = aegle::loader::Program::load_with("inbox.aegle", &am3::elements())?.b
 - 任何 Aegle 主题（包括 `Theme::dark()`）都能得到一致的 Material 配色；
 - `am3::theme(seed, mode)` 反过来从种子色生成 Aegle 主题，背景、表面、文字、强调色等字段取自同一方案。
 
-应用内容可以用 `Role::primary.token()` 等颜色令牌（`am3.color.primary`）绑定到当前方案。
+应用内容可以用 `Role::primary.token()` 等颜色令牌（`am3.color.primary`，多词角色用连字符，如 `am3.color.primary-container`）绑定到当前方案；`am3::theme` 与 `am3::elements` 会注册全部令牌，标记语言里可直接写 `token("am3.color.primary-container")`。
 
 ## 使用
 

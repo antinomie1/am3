@@ -1,0 +1,111 @@
+// The inputs page: filled and outlined text fields, search, the date and
+// time pickers, docked and modal, and a carousel.
+use "section.aegle"
+
+component InputsPage() {
+    event say(string)
+    state name: string = ""
+    state wrong: bool = false
+    state day: string = ""
+    state picking_day: bool = false
+    state time: string = ""
+    state picking_time: bool = false
+    Column {
+        gap: 28dp
+        TopSection {
+            title: "文本框"
+            Column {
+                gap: 16dp
+                width: 320dp
+                MdTextField { label: "姓名"; supporting: "可以用输入法输入中文"; on changed { name = self.text } }
+                MdText { text: "输入的姓名：" + name; color: "on_surface_variant" }
+                MdTextField { label: "邮箱"; leading_icon: "mail"; clearable: true }
+                MdTextField { label: "简介"; multiline: true; counter: 120 }
+            }
+            Column {
+                gap: 16dp
+                width: 320dp
+                MdTextField { label: "城市"; style: outlined; leading_icon: "search"; text: "上海"; clearable: true }
+                MdTextField { label: "密码"; style: outlined; password: true; supporting: "至少 8 个字符"; error: wrong }
+                MdCheckbox { text: "标记为错误"; on changed { wrong = self.checked } }
+                MdTextField { label: "备注"; style: outlined; placeholder: "只读"; read_only: true }
+            }
+        }
+        Section {
+            title: "搜索"
+            MdSearch {
+                placeholder: "搜索城市"; trailing_icon: "mic"; width: 420dp
+                MdList {
+                    MdListItem { headline: "里斯本"; clickable: true; leading: "schedule"; on clicked { emit say("里斯本") } }
+                    MdListItem { headline: "京都"; clickable: true; leading: "schedule"; on clicked { emit say("京都") } }
+                    MdListItem { headline: "瓦哈卡"; clickable: true; leading: "schedule"; on clicked { emit say("瓦哈卡") } }
+                    MdListItem { headline: "首尔"; clickable: true; leading: "schedule"; on clicked { emit say("首尔") } }
+                }
+            }
+        }
+        TopSection {
+            title: "日期选择器"
+            MdDatePicker { on changed { emit say("日期 " + self.selected) } }
+            Column {
+                gap: 16dp
+                width: 320dp
+                // Closed by Cancel, the picker leaves `picking_day` set;
+                // clearing it first opens the picker every time.
+                MdButton {
+                    text: "打开日期对话框"; style: tonal; icon: "calendar"
+                    on clicked { picking_day = false; picking_day = true }
+                }
+                MdText { text: "选中的日期：" + day; color: "on_surface_variant" }
+            }
+            MdDatePicker { modal: true; open: picking_day; on confirmed { picking_day = false; day = self.selected } }
+        }
+        TopSection {
+            title: "时间选择器"
+            MdTimePicker { h24: true; hour: 19; minute: 30 }
+            Column {
+                gap: 16dp
+                width: 320dp
+                MdButton {
+                    text: "打开时间对话框"; style: tonal; icon: "schedule"
+                    on clicked { picking_time = false; picking_time = true }
+                }
+                MdText { text: "选中的时间：" + time; color: "on_surface_variant" }
+            }
+            MdTimePicker {
+                modal: true; open: picking_time
+                on confirmed { picking_time = false; time = str(self.hour) + " 时 " + str(self.minute) + " 分" }
+            }
+        }
+        Section {
+            title: "轮播"
+            MdCarousel {
+                item_width: 200; height: 200; width: 640dp
+                MdCarouselItem {
+                    clickable: true; background: token("am3.color.primary-container")
+                    on clicked { emit say("里斯本") }
+                    MdText { text: "里斯本"; typescale: title_large; color: "on_primary_container" }
+                }
+                MdCarouselItem {
+                    clickable: true; background: token("am3.color.tertiary-container")
+                    on clicked { emit say("京都") }
+                    MdText { text: "京都"; typescale: title_large; color: "on_tertiary_container" }
+                }
+                MdCarouselItem {
+                    clickable: true; background: token("am3.color.secondary-container")
+                    on clicked { emit say("瓦哈卡") }
+                    MdText { text: "瓦哈卡"; typescale: title_large; color: "on_secondary_container" }
+                }
+                MdCarouselItem {
+                    clickable: true; background: token("am3.color.primary-container")
+                    on clicked { emit say("首尔") }
+                    MdText { text: "首尔"; typescale: title_large; color: "on_primary_container" }
+                }
+                MdCarouselItem {
+                    clickable: true; background: token("am3.color.tertiary-container")
+                    on clicked { emit say("开普敦") }
+                    MdText { text: "开普敦"; typescale: title_large; color: "on_tertiary_container" }
+                }
+            }
+        }
+    }
+}

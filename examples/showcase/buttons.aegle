@@ -1,0 +1,114 @@
+// The buttons page: every button style, size and shape, toggle buttons,
+// icon buttons, FABs and the FAB menu, button groups and segmented buttons.
+use "section.aegle"
+
+component ButtonsPage() {
+    event say(string)
+    state folded: bool = false
+    Column {
+        gap: 28dp
+        Section {
+            title: "常用按钮"
+            MdButton { text: "凸起"; style: elevated; on clicked { emit say("凸起") } }
+            MdButton { text: "填充"; style: filled; on clicked { emit say("填充") } }
+            MdButton { text: "色调"; style: tonal; on clicked { emit say("色调") } }
+            MdButton { text: "描边"; style: outlined; on clicked { emit say("描边") } }
+            MdButton { text: "文字"; style: text; on clicked { emit say("文字") } }
+            MdButton { text: "添加"; icon: "add"; on clicked { emit say("添加") } }
+            MdButton { text: "不可用"; enabled: false }
+        }
+        Section {
+            title: "尺寸与形状"
+            MdButton { text: "超小"; size: extra_small; on clicked { emit say("超小") } }
+            MdButton { text: "小"; size: small; on clicked { emit say("小") } }
+            MdButton { text: "中"; size: medium; on clicked { emit say("中") } }
+            MdButton { text: "大"; size: large; on clicked { emit say("大") } }
+            MdButton { text: "超大"; size: extra_large; on clicked { emit say("超大") } }
+            MdButton { text: "方形"; style: tonal; square: true; on clicked { emit say("方形") } }
+        }
+        Section {
+            title: "切换按钮"
+            MdButton {
+                text: "凸起"; style: elevated; selected: false
+                on clicked { if self.selected { emit say("凸起切换按钮：开") } else { emit say("凸起切换按钮：关") } }
+            }
+            MdButton {
+                text: "填充"; style: filled; selected: false
+                on clicked { if self.selected { emit say("填充切换按钮：开") } else { emit say("填充切换按钮：关") } }
+            }
+            MdButton {
+                text: "色调"; style: tonal; selected: false
+                on clicked { if self.selected { emit say("色调切换按钮：开") } else { emit say("色调切换按钮：关") } }
+            }
+            MdButton {
+                text: "描边"; style: outlined; selected: false
+                on clicked { if self.selected { emit say("描边切换按钮：开") } else { emit say("描边切换按钮：关") } }
+            }
+        }
+        Section {
+            title: "图标按钮"
+            MdIconButton {
+                icon: "favorite"; label: "标准"; selected: false
+                on clicked { if self.selected { emit say("标准图标按钮：开") } else { emit say("标准图标按钮：关") } }
+            }
+            MdIconButton {
+                icon: "favorite"; label: "填充"; style: filled; selected: false
+                on clicked { if self.selected { emit say("填充图标按钮：开") } else { emit say("填充图标按钮：关") } }
+            }
+            MdIconButton {
+                icon: "favorite"; label: "色调"; style: tonal; selected: false
+                on clicked { if self.selected { emit say("色调图标按钮：开") } else { emit say("色调图标按钮：关") } }
+            }
+            MdIconButton {
+                icon: "favorite"; label: "描边"; style: outlined; selected: false
+                on clicked { if self.selected { emit say("描边图标按钮：开") } else { emit say("描边图标按钮：关") } }
+            }
+            MdIconButton { icon: "edit"; label: "窄"; style: tonal; width: narrow }
+            MdIconButton { icon: "edit"; label: "默认"; style: tonal; width: default }
+            MdIconButton { icon: "edit"; label: "宽"; style: tonal; width: wide }
+            MdIconButton { icon: "notifications"; label: "通知"; badge: 3 }
+        }
+        Section {
+            title: "悬浮操作按钮"
+            MdFab { icon: "edit"; label: "撰写"; on clicked { emit say("撰写") } }
+            MdFab { icon: "add"; label: "新建"; size: medium; color: tertiary }
+            MdFab { icon: "photo"; label: "拍照"; size: large }
+            // Clicking the extended FAB folds it to its icon and back.
+            MdFab { icon: "edit"; label: "撰写"; extended: !folded; on clicked { folded = !folded } }
+            MdFabMenu {
+                icon: "add"; label: "新建"
+                MdFabMenuItem { icon: "mail"; text: "消息"; on clicked { emit say("消息") } }
+                MdFabMenuItem { icon: "calendar"; text: "日程"; on clicked { emit say("日程") } }
+                MdFabMenuItem { icon: "edit"; text: "笔记"; on clicked { emit say("笔记") } }
+            }
+        }
+        Section {
+            title: "按钮组"
+            MdButtonGroup {
+                MdGroupButton { text: "邮件" }
+                MdGroupButton { text: "收件箱"; style: filled }
+                MdGroupButton { text: "星标" }
+            }
+            MdButtonGroup {
+                style: connected; selection: single
+                MdGroupButton { text: "日"; on clicked { emit say("日") } }
+                MdGroupButton { text: "周"; on clicked { emit say("周") } }
+                MdGroupButton { text: "月"; on clicked { emit say("月") } }
+            }
+        }
+        Section {
+            title: "分段按钮"
+            MdSegmentedButton {
+                MdSegment { text: "步行"; selected: true; on clicked { emit say("步行") } }
+                MdSegment { text: "骑行"; selected: false; on clicked { emit say("骑行") } }
+                MdSegment { text: "驾车"; selected: false; on clicked { emit say("驾车") } }
+            }
+            MdSegmentedButton {
+                multiple: true
+                MdSegment { text: "邮件"; icon: "mail"; selected: true }
+                MdSegment { text: "聊天"; icon: "chat"; selected: false }
+                MdSegment { text: "通知"; icon: "notifications"; selected: true }
+            }
+        }
+    }
+}

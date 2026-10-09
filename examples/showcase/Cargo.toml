@@ -1,0 +1,12 @@
+[package]
+name = "am3-showcase"
+description = "An interactive window of the am3 components, built in Rust or in markup"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.88"
+license = "MIT OR Apache-2.0"
+publish = false
+
+[dependencies]
+am3 = { path = "../.." }
+aegle = { git = "https://github.com/antinomie1/aegle", branch = "main", default-features = false, features = ["native", "software", "system-fonts", "text-dictionary", "markup", "motion"] }

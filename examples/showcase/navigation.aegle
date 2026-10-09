@@ -1,0 +1,100 @@
+// The navigation page: tabs, app bars, toolbars, a navigation bar, a
+// modal navigation drawer, and expanding the window's own rail.
+use "section.aegle"
+
+component NavigationPage() {
+    event say(string)
+    event expand(bool)
+    state drawer: bool = false
+    Column {
+        gap: 28dp
+        Section {
+            title: "标签页"
+            Column {
+                gap: 12dp; width: 420dp; align: stretch
+                MdTabs {
+                    MdTab { text: "航班"; icon: "send"; on clicked { emit say("航班") } }
+                    MdTab { text: "行程"; icon: "calendar"; on clicked { emit say("行程") } }
+                    MdTab { text: "探索"; icon: "explore"; on clicked { emit say("探索") } }
+                }
+                MdTabs {
+                    style: secondary
+                    MdTab { text: "概览" }
+                    MdTab { text: "规格" }
+                    MdTab { text: "评价" }
+                }
+            }
+        }
+        Section {
+            title: "顶部应用栏"
+            Column {
+                gap: 12dp; width: 420dp; align: stretch
+                MdTopAppBar {
+                    title: "收件箱"
+                    MdAction { icon: "menu"; label: "菜单"; navigation: true }
+                    MdAction { icon: "search"; label: "搜索" }
+                    MdAction { icon: "more_vert"; label: "更多" }
+                }
+                MdTopAppBar {
+                    title: "居中标题"; style: center_aligned
+                    MdAction { icon: "arrow_back"; label: "返回"; navigation: true }
+                    MdAction { icon: "person"; label: "账户" }
+                }
+                MdTopAppBar {
+                    title: "中号标题"; style: medium; subtitle: "副标题"
+                    MdAction { icon: "arrow_back"; label: "返回"; navigation: true }
+                    MdAction { icon: "bookmark"; label: "书签" }
+                }
+            }
+        }
+        Section {
+            title: "底部应用栏与工具栏"
+            Column {
+                gap: 12dp; width: 420dp; align: stretch
+                MdBottomAppBar {
+                    MdAction { icon: "search"; label: "搜索"; on clicked { emit say("搜索") } }
+                    MdAction { icon: "delete"; label: "删除"; on clicked { emit say("删除") } }
+                    MdAction { icon: "share"; label: "分享"; on clicked { emit say("分享") } }
+                }
+                MdToolbar {
+                    MdAction { icon: "arrow_back"; label: "后退" }
+                    MdAction { icon: "arrow_forward"; label: "前进" }
+                    MdAction { icon: "refresh"; label: "刷新" }
+                    MdAction { icon: "share"; label: "分享" }
+                }
+            }
+            MdToolbar {
+                floating: true; vibrant: true
+                MdAction { icon: "edit"; label: "编辑" }
+                MdAction { icon: "photo"; label: "图片" }
+                MdAction { icon: "mic"; label: "语音" }
+            }
+        }
+        Section {
+            title: "导航栏"
+            Column {
+                gap: 12dp; width: 420dp; align: stretch
+                MdNavigationBar {
+                    MdNavItem { icon: "home"; text: "首页" }
+                    MdNavItem { icon: "mail"; text: "邮件"; badge: 3 }
+                    MdNavItem { icon: "notifications"; text: "通知"; badge: -1 }
+                    MdNavItem { icon: "settings"; text: "设置" }
+                }
+            }
+        }
+        Section {
+            title: "导航抽屉与栏杆"
+            MdNavigationDrawer {
+                modal: true; headline: "邮件"; open: drawer
+                MdNavItem { icon: "mail"; text: "收件箱"; on clicked { drawer = false; emit say("收件箱") } }
+                MdNavItem { icon: "send"; text: "已发送"; on clicked { drawer = false; emit say("已发送") } }
+                MdNavItem { icon: "star"; text: "星标"; on clicked { drawer = false; emit say("星标") } }
+            }
+            // A click on the scrim closes the drawer without clearing
+            // `drawer`; clearing it first opens the drawer every time.
+            MdButton { text: "打开导航抽屉"; style: tonal; icon: "menu"; on clicked { drawer = false; drawer = true } }
+            MdSwitch { text: "展开左侧导航栏杆"; on changed { emit expand(self.checked) } }
+            MdText { text: "展开后栏杆显示为行内标签。"; color: "on_surface_variant" }
+        }
+    }
+}

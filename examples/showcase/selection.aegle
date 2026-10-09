@@ -1,0 +1,74 @@
+// The selection page: checkboxes, radio buttons, switches, sliders and
+// chips.
+use "section.aegle"
+
+component SelectionPage() {
+    event say(string)
+    state volume: float = 40
+    state ada: bool = true
+    state grace: bool = true
+    Column {
+        gap: 28dp
+        Section {
+            title: "复选框"
+            MdCheckbox {
+                text: "已读"; checked: true
+                on changed { if self.checked { emit say("已读：勾选") } else { emit say("已读：取消") } }
+            }
+            MdCheckbox {
+                text: "星标"
+                on changed { if self.checked { emit say("星标：勾选") } else { emit say("星标：取消") } }
+            }
+            MdCheckbox { text: "部分"; checked: true; mixed: true }
+            MdCheckbox { text: "必填"; error: true }
+            MdCheckbox { text: "不可用"; checked: true; enabled: false }
+        }
+        Section {
+            title: "单选按钮"
+            MdRadio { text: "小杯"; on changed { emit say("小杯") } }
+            MdRadio { text: "中杯"; checked: true; on changed { emit say("中杯") } }
+            MdRadio { text: "大杯"; on changed { emit say("大杯") } }
+        }
+        Section {
+            title: "开关"
+            MdSwitch {
+                text: "Wi-Fi"; checked: true
+                on changed { if self.checked { emit say("Wi-Fi：开") } else { emit say("Wi-Fi：关") } }
+            }
+            MdSwitch {
+                text: "蓝牙"
+                on changed { if self.checked { emit say("蓝牙：开") } else { emit say("蓝牙：关") } }
+            }
+            MdSwitch { text: "飞行模式"; icons: true }
+            MdSwitch { text: "不可用"; checked: true; enabled: false }
+        }
+        Section {
+            title: "滑块"
+            Column {
+                gap: 16dp
+                width: 420dp
+                MdText { text: "音量：" + str(int(volume)); color: "on_surface_variant" }
+                MdSlider { min: 0; max: 100; value: 40; on changed { volume = self.value } }
+                MdSlider { min: 0; max: 10; value: 6; step: 1; ticks: true }
+                MdSlider { min: -50; max: 50; value: 20; centered: true }
+                MdSlider { min: 0; max: 1; value: 0.5; size: large }
+            }
+        }
+        Section {
+            title: "纸片"
+            MdChip { text: "加入日程"; icon: "calendar" }
+            MdChip { text: "路线"; icon: "send"; elevated: true }
+            MdChip { text: "素食"; kind: filter; selected: true }
+            MdChip { text: "无麸质"; kind: filter; selected: false }
+            MdChip {
+                text: "Ada"; kind: input; icon: "person"; visible: ada
+                on removed { ada = false; emit say("移除 Ada") }
+            }
+            MdChip {
+                text: "Grace"; kind: input; icon: "person"; visible: grace
+                on removed { grace = false; emit say("移除 Grace") }
+            }
+            MdChip { text: "听起来不错"; kind: suggestion; on clicked { emit say("听起来不错") } }
+        }
+    }
+}

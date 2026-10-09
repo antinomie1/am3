@@ -54,11 +54,11 @@ Window {
         MdScrollView {
             grow: 1
             padding: 24dp
-            Column { visible: page == 0; ButtonsPage { on say(text) { last = text } } }
-            Column { visible: page == 1; SelectionPage { on say(text) { last = text } } }
-            Column { visible: page == 2; InputsPage { on say(text) { last = text } } }
+            Column { visible: page == 0; shrink: 0; ButtonsPage { on say(text) { last = text } } }
+            Column { visible: page == 1; shrink: 0; SelectionPage { on say(text) { last = text } } }
+            Column { visible: page == 2; shrink: 0; InputsPage { on say(text) { last = text } } }
             Column {
-                visible: page == 3
+                visible: page == 3; shrink: 0
                 gap: 28dp
                 Section {
                     title: "卡片"
@@ -178,7 +178,7 @@ Window {
                 }
             }
             Column {
-                visible: page == 4
+                visible: page == 4; shrink: 0
                 NavigationPage { on say(text) { last = text }; on expand(on) { wide = on } }
             }
         }

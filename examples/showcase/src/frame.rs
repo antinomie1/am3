@@ -59,6 +59,9 @@ pub fn build(app: &App) -> Result<Shell> {
     let page = |index: usize| -> Result<Container> {
         let page = scroll.column()?;
         page.set_gap(28.0)?;
+        // A page keeps its content height and scrolls instead of shrinking
+        // its sections into the viewport.
+        page.set_shrink(0.0)?;
         page.set_visible(index == 0)?;
         Ok(page)
     };

@@ -93,3 +93,25 @@ menu.item(icons::edit(), "笔记")?.on_click(|_| Ok(()))?;
 ```
 
 按钮之间的协作都在控件层完成，不需要 am3 的额外状态：单选组的互斥通过 Aegle 的 `Deferred` 在输入处理后取消兄弟按钮的选中；标准组的伸展由按下的按钮经 `Deferred` 设置自己与相邻按钮的伸展目标，各自在绘制时以弹簧采样，因此不触发布局。连接组、分割按钮与分段按钮的不对称圆角用路径绘制（按尺寸与半径缓存，仅在形变动画期间重建）；路径无法作为裁剪区域，因此这些形状上的按下以均匀状态层代替圆形涟漪。
+
+## 选择控件与滑块
+
+```rust
+let all = Checkbox::new(&parent, "全选", false)?;
+all.set_mixed(true)?;                      // 不确定状态，下一次改变时清除
+all.set_error(true)?;
+let small = Radio::new(&parent, "小", true)?;  // 同一父容器内互斥
+let wifi = Switch::new(&parent, "Wi-Fi", true)?;
+wifi.set_icons(Some(icons::check()), Some(icons::close()))?;
+wifi.on_change(|s| { println!("{}", s.is_checked()?); Ok(()) })?;
+
+let volume = Slider::new(&parent, 0.0, 100.0, 40.0)?;
+volume.set_step(10.0, true)?;              // 步长与停止点
+volume.set_size(SliderSize::Medium)?;
+let price = Slider::new(&parent, 0.0, 1000.0, 800.0)?;
+price.set_range(true)?;                    // 第二个手柄：start()/set_start()
+```
+
+复选框、单选按钮与开关共用一个控件 `SelectionControl`，行为复用 Aegle 的 `Toggle`；单选按钮的互斥同按钮组一样经 `Deferred` 完成，方向键由 am3 安装的 `am3::HOOKS` 处理（创建单选按钮时自动安装，与 Aegle 自己的钩子并存）。皮肤槽位：`foreground` 为标签，`indicator` 为选中容器（复选框方框、单选环与点、开关轨道），`border_color` 为未选中轮廓，`background` 为状态层，`caret` 为容器上的标记（对勾、开关手柄）。
+
+滑块的每个手柄复用 Aegle 的 `Slider` 行为（指针捕获、方向键、Page、Home/End、语义增减与设值）；范围滑块按下时选较近的手柄，键盘移动最近操作的手柄，任何改变后保持起点不超过终点。程序设值时手柄以弹簧滑到新位置，拖动时直接跟手。

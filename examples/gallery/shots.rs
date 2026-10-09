@@ -1,10 +1,7 @@
 //! What the gallery shows: each component in its variants and states.
 
 use aegle_ui::{Container, Result};
-use am3::{
-    Button, ButtonGroup, ButtonShape, ButtonSize, ButtonStyle, Fab, FabColor, FabMenu, FabSize,
-    GroupStyle, IconButton, IconStyle, IconWidth, SegmentedButton, Selection, SplitButton, icons,
-};
+use am3::*;
 
 use crate::{Setup, hover, press};
 
@@ -279,6 +276,113 @@ pub(crate) const ALL: &[Shot] = &[
                 s.segment("Fly", Some(icons::send()))?
                     .set_selected(Some(true))?;
                 Ok(())
+            }),
+        ],
+    ),
+    (
+        "checkboxes",
+        (150.0, 96.0),
+        &[
+            ("unchecked", |_, h| {
+                Checkbox::new(h, "Label", false).map(drop)
+            }),
+            ("checked", |_, h| Checkbox::new(h, "Label", true).map(drop)),
+            ("indeterminate", |_, h| {
+                Checkbox::new(h, "Label", true)?.set_mixed(true)
+            }),
+            ("error", |_, h| {
+                Checkbox::new(h, "Label", true)?.set_error(true)
+            }),
+            ("hovered", |ui, h| {
+                hover(ui, &Checkbox::new(h, "Label", false)?)
+            }),
+            ("disabled", |_, h| {
+                Checkbox::new(h, "Label", true)?.set_enabled(false)
+            }),
+        ],
+    ),
+    (
+        "radio-buttons",
+        (150.0, 96.0),
+        &[
+            ("unselected", |_, h| Radio::new(h, "Label", false).map(drop)),
+            ("selected", |_, h| Radio::new(h, "Label", true).map(drop)),
+            ("focused", |_, h| Radio::new(h, "Label", true)?.focus()),
+            ("pressed", |ui, h| {
+                press(ui, &Radio::new(h, "Label", false)?)
+            }),
+            ("disabled", |_, h| {
+                Radio::new(h, "Label", true)?.set_enabled(false)
+            }),
+        ],
+    ),
+    (
+        "switches",
+        (150.0, 96.0),
+        &[
+            ("off", |_, h| Switch::new(h, "", false).map(drop)),
+            ("on", |_, h| Switch::new(h, "", true).map(drop)),
+            ("icons", |_, h| {
+                let row = styles(h)?;
+                for on in [false, true] {
+                    let s = Switch::new(&row, "", on)?;
+                    s.set_icons(Some(icons::check()), Some(icons::close()))?;
+                }
+                Ok(())
+            }),
+            ("pressed", |ui, h| press(ui, &Switch::new(h, "", true)?)),
+            ("labelled", |_, h| Switch::new(h, "Wi-Fi", true).map(drop)),
+            ("disabled", |_, h| {
+                let row = styles(h)?;
+                Switch::new(&row, "", false)?.set_enabled(false)?;
+                Switch::new(&row, "", true)?.set_enabled(false)
+            }),
+        ],
+    ),
+    (
+        "sliders",
+        (260.0, 150.0),
+        &[
+            ("continuous", |_, h| {
+                Slider::new(h, 0.0, 100.0, 40.0).map(drop)
+            }),
+            ("discrete, ticks", |_, h| {
+                let s = Slider::new(h, 0.0, 10.0, 6.0)?;
+                s.set_step(1.0, true)
+            }),
+            ("range", |_, h| {
+                let s = Slider::new(h, 0.0, 100.0, 80.0)?;
+                s.set_range(true)?;
+                s.set_start(25.0)
+            }),
+            ("centered", |_, h| {
+                let s = Slider::new(h, -50.0, 50.0, 20.0)?;
+                s.set_centered(true)
+            }),
+            ("dragging", |ui, h| {
+                h.set_padding(52.0)?;
+                press(ui, &Slider::new(h, 0.0, 100.0, 50.0)?)
+            }),
+            ("disabled", |_, h| {
+                Slider::new(h, 0.0, 100.0, 40.0)?.set_enabled(false)
+            }),
+        ],
+    ),
+    (
+        "slider-sizes",
+        (260.0, 140.0),
+        &[
+            ("S", |_, h| {
+                Slider::new(h, 0.0, 1.0, 0.5)?.set_size(SliderSize::Small)
+            }),
+            ("M", |_, h| {
+                Slider::new(h, 0.0, 1.0, 0.5)?.set_size(SliderSize::Medium)
+            }),
+            ("L", |_, h| {
+                Slider::new(h, 0.0, 1.0, 0.5)?.set_size(SliderSize::Large)
+            }),
+            ("XL", |_, h| {
+                Slider::new(h, 0.0, 1.0, 0.5)?.set_size(SliderSize::ExtraLarge)
             }),
         ],
     ),

@@ -63,7 +63,7 @@ impl Shape {
     }
 }
 
-fn path(rect: Rect, left: f32, right: f32) -> Result<Path> {
+pub(crate) fn path(rect: Rect, left: f32, right: f32) -> Result<Path> {
     let half = rect.size.width.min(rect.size.height) / 2.0;
     let (l, r) = (left.min(half), right.min(half));
     let (x0, y0) = (rect.origin.x, rect.origin.y);

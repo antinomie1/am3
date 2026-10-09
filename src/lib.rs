@@ -19,7 +19,9 @@ mod group;
 mod icon_button;
 mod pressable;
 mod segmented;
+mod selection;
 mod skin;
+mod slider;
 mod split;
 
 pub use button::{Button, ButtonShape, ButtonSize, ButtonStyle};
@@ -31,6 +33,8 @@ pub use icon::{Icon, icons};
 pub use icon_button::{IconButton, IconStyle, IconWidth};
 pub use pressable::PressableControl;
 pub use segmented::{Segment, SegmentedButton};
+pub use selection::{Checkbox, Radio, SelectionControl, Switch};
+pub use slider::{Slider, SliderControl, SliderSize};
 pub use split::SplitButton;
 
 /// Every kind this library declares, by component, for skin overrides with
@@ -49,6 +53,8 @@ pub mod kinds {
         STANDARD_ICON_BUTTON, STANDARD_ICON_TOGGLE, TONAL_ICON_BUTTON, TONAL_ICON_TOGGLE,
     };
     pub use crate::segmented::SEGMENT;
+    pub use crate::selection::{CHECKBOX, CHECKBOX_ERROR, RADIO_BUTTON, SWITCH};
+    pub use crate::slider::SLIDER;
 }
 
 /// Gives a new control's colors Material's default effects spring.
@@ -62,3 +68,18 @@ fn effects(node: &aegle_ui::Node) -> aegle_ui::Result {
     let _ = node;
     Ok(())
 }
+
+/// The engine hooks am3 needs: arrow keys move among radio buttons. Every
+/// control that needs them installs them on creation.
+pub static HOOKS: aegle_ui::Hooks = aegle_ui::Hooks {
+    key: Some(selection::radio_key),
+    press: None,
+    overlay_at: None,
+    place: None,
+    removed: None,
+    removed_after: None,
+    measure: None,
+    realize: None,
+    hover: None,
+    wake: None,
+};

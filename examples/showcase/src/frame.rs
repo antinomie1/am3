@@ -1,10 +1,10 @@
-//! The Rust version's window: the header with the theme controls, the
-//! navigation rail and the scrolling page area.
+//! The Rust version's window: the full-height navigation rail, and beside
+//! it the header with the theme controls over the scrolling page pane.
 
 use std::rc::Rc;
 
-use aegle::{Align, App, Container, Result, WindowOptions};
-use am3::{Divider, NavigationRail, Role, SegmentedButton, Switch, Text, icons, tokens::typescale};
+use aegle::{Align, App, Color, ColorSlot, Container, Insets, Length, Result, WindowOptions};
+use am3::{NavigationRail, Role, SegmentedButton, Switch, Text, icons, tokens::typescale};
 
 use crate::shell::{PAGES, SEEDS, Say, Shell};
 
@@ -17,8 +17,30 @@ pub fn build(app: &App) -> Result<Shell> {
             ..Default::default()
         },
     )?;
+    // The navigation sits on a darker surface than the page, as on
+    // m3.material.io; the page is a lighter rounded pane without an outline.
+    // Bound to tokens, both follow theme changes.
+    window.bind_color(ColorSlot::Background, Role::surface_container.token())?;
+    window.set_padding(0.0)?;
 
-    let header = window.row()?;
+    let body = window.row()?;
+    body.set_grow(1.0)?;
+    // Without it the row grows to the page's height and never scrolls.
+    body.set_min_height(0.0)?;
+    let rail = NavigationRail::new(&body)?;
+    // The rail shows the window's darker surface instead of its own.
+    rail.set_background(Color::TRANSPARENT)?;
+    let main = body.column()?;
+    main.set_grow(1.0)?;
+    main.set_min_height(0.0)?;
+    main.set_padding(Insets {
+        left: Length::Px(0.0),
+        top: Length::Px(0.0),
+        right: Length::Px(16.0),
+        bottom: Length::Px(16.0),
+    })?;
+
+    let header = main.row()?;
     header.set_padding(16.0)?;
     header.set_gap(16.0)?;
     header.set_align_items(Some(Align::Center))?;
@@ -44,16 +66,16 @@ pub fn build(app: &App) -> Result<Shell> {
     let dark = Switch::new(&header, "深色", false)?;
     let contrast = Switch::new(&header, "高对比", false)?;
     let reduced = Switch::new(&header, "减少动态效果", false)?;
-    Divider::new(&window)?;
 
-    let body = window.row()?;
-    body.set_grow(1.0)?;
-    // Without it the row grows to the page's height and never scrolls.
-    body.set_min_height(0.0)?;
-    let rail = NavigationRail::new(&body)?;
-    let scroll = am3::scroll_view(&body)?;
+    let scroll = am3::scroll_view(&main)?;
+    // Aegle's scroll views don't shrink by default; this one must fit the
+    // window to scroll.
     scroll.set_grow(1.0)?;
+    scroll.set_shrink(1.0)?;
+    scroll.set_min_height(0.0)?;
     scroll.set_padding(24.0)?;
+    scroll.bind_color(ColorSlot::Background, Role::surface.token())?;
+    scroll.set_radius(24.0)?;
 
     let say: Say = Rc::new(move |text| status.set_text(&format!("最近操作：{text}")));
     let page = |index: usize| -> Result<Container> {

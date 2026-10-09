@@ -49,7 +49,7 @@ fn markup(app: &App) -> Result<shell::Shell> {
     use aegle::prelude::{Column, Row};
     use am3::{
         MdAction, MdBottomAppBar, MdButton, MdButtonGroup, MdCard, MdCarousel, MdCarouselItem,
-        MdCheckbox, MdChip, MdDatePicker, MdDialog, MdDialogAction, MdDivider, MdFab, MdFabMenu,
+        MdCheckbox, MdChip, MdDatePicker, MdDialog, MdDialogAction, MdFab, MdFabMenu,
         MdFabMenuItem, MdGroupButton, MdIconButton, MdList, MdListItem, MdLoadingIndicator,
         MdNavItem, MdNavigationBar, MdNavigationDrawer, MdNavigationRail, MdProgress, MdRadio,
         MdScrollView, MdSearch, MdSegment, MdSegmentedButton, MdSheet, MdSlider, MdSnackbar,

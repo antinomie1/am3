@@ -151,3 +151,25 @@ fn misuse_is_reported() -> Result {
     );
     Ok(())
 }
+
+#[test]
+fn a_scroll_view_scrolls_without_an_outline() -> Result {
+    let ui = ui()?;
+    let lines = (0..12)
+        .map(|i| format!("MdText {{ text: \"Line {i}\" }}"))
+        .collect::<Vec<_>>()
+        .join("\n");
+    let view = load(
+        &ui,
+        &format!("Column {{ MdScrollView {{ id: list; height: 80dp; {lines} }} }}"),
+    )?;
+    ui.refresh()?;
+    let list: aegle_widgets::ScrollView = typed(&view, "list");
+    assert!(list.max_offset()?.y > 0.0, "the content overflows");
+    list.scroll_to(aegle_ui::Point::new(0.0, 30.0))?;
+    assert_eq!(list.offset()?.y, 30.0);
+    let look = list.appearance()?;
+    assert_eq!(look.border_width, 0.0);
+    assert_eq!(look.scrollbar[0], aegle_ui::Color::TRANSPARENT);
+    Ok(())
+}

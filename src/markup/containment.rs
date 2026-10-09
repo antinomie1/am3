@@ -1,14 +1,17 @@
 //! Elements of text, icons and the containment and communication
-//! components: cards, lists, dividers, dialogs, sheets and snackbars.
+//! components: cards, scroll views, lists, dividers, dialogs, sheets and
+//! snackbars.
 
 use std::time::Duration;
 
 use aegle_loader::{Elements, element};
 use aegle_ui::{Container, Result};
+use aegle_widgets::ScrollView;
 
 use super::{adopt, choices, icon, maybe_icon, owned, role};
 use crate::{
     Button, Card, CardStyle, Dialog, Divider, IconView, List, ListItem, Sheet, Snackbar, Text,
+    scroll_view,
     tokens::{TypeStyle, typescale as t},
 };
 
@@ -97,6 +100,11 @@ element! {
         create |parent, style: choice(elevated, filled, outlined) = "filled", clickable: bool = false| if clickable { Card::clickable(parent, card_style(style)) } else { Card::new(parent, card_style(style)) };
         event clicked => |card, run| card.on_click(move |_| run());
     }
+    /// A scrolling column with the Material scrollbar and no outline.
+    pub MdScrollView(ScrollView) {
+        layout flex;
+        create |parent| scroll_view(parent);
+    }
     /// A list of `MdListItem` children.
     pub MdList(List) {
         layout flex;
@@ -176,6 +184,7 @@ pub(super) fn add(elements: Elements) -> Elements {
         .with::<MdIcon>()
         .with::<MdDivider>()
         .with::<MdCard>()
+        .with::<MdScrollView>()
         .with::<MdList>()
         .with::<MdListItem>()
         .with::<MdDialog>()

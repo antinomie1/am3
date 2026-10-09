@@ -3,7 +3,7 @@
 
 use std::rc::Rc;
 
-use aegle::{Align, App, Container, Result, Widgets, WindowOptions};
+use aegle::{Align, App, Container, Result, WindowOptions};
 use am3::{Divider, NavigationRail, Role, SegmentedButton, Switch, Text, icons, tokens::typescale};
 
 use crate::shell::{PAGES, SEEDS, Say, Shell};
@@ -48,8 +48,10 @@ pub fn build(app: &App) -> Result<Shell> {
 
     let body = window.row()?;
     body.set_grow(1.0)?;
+    // Without it the row grows to the page's height and never scrolls.
+    body.set_min_height(0.0)?;
     let rail = NavigationRail::new(&body)?;
-    let scroll = body.scroll_view()?;
+    let scroll = am3::scroll_view(&body)?;
     scroll.set_grow(1.0)?;
     scroll.set_padding(24.0)?;
 

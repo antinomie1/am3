@@ -343,6 +343,7 @@ fn colors(theme: &Theme, state: VisualState, filled: bool, error: bool) -> Appea
         selection: alpha(s.primary, 0.4),
         focus_width: 0.0,
         radius: 4.0,
+        scrollbar: crate::scroll::scrollbar(&s),
         ..Appearance::base(theme, state)
     }
 }

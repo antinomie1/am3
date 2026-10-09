@@ -41,6 +41,8 @@ Window {
     MdDivider {}
     Row {
         grow: 1
+        // Without it the row grows to the page's height and never scrolls.
+        min_height: 0dp
         MdNavigationRail {
             expanded: wide
             MdNavItem { icon: "star"; text: "按钮"; on clicked { page = 0 } }
@@ -49,7 +51,7 @@ Window {
             MdNavItem { icon: "bookmark"; text: "容器与浮层"; on clicked { page = 3 } }
             MdNavItem { icon: "explore"; text: "导航"; on clicked { page = 4 } }
         }
-        ScrollView {
+        MdScrollView {
             grow: 1
             padding: 24dp
             Column { visible: page == 0; ButtonsPage { on say(text) { last = text } } }

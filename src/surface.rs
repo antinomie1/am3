@@ -341,6 +341,10 @@ impl Card {
         Ok(Self(card))
     }
 
+    pub(crate) fn wrap(container: Container) -> Self {
+        Self(container)
+    }
+
     /// Adds a handler run after each activation of a clickable card.
     pub fn on_click(&self, mut callback: impl FnMut(Card) -> Result + 'static) -> Result {
         self.change(|state, id| state.on_action(id, move |node| callback(Card(Container(node)))))

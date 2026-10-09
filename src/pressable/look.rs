@@ -41,6 +41,7 @@ pub(crate) enum Look {
     Segment(crate::segmented::SegmentLook),
     FabItem(crate::fab::FabColor),
     Chip(crate::chip::ChipLook),
+    Time(crate::time::TimeLook),
 }
 
 impl Look {
@@ -52,6 +53,7 @@ impl Look {
             Self::Segment(_) => &crate::segmented::SEGMENT,
             Self::FabItem(color) => crate::fab_menu::item_kind(color),
             Self::Chip(look) => look.kind(),
+            Self::Time(look) => look.kind(),
         }
     }
 
@@ -63,6 +65,7 @@ impl Look {
             Self::Segment(look) => look.spec(),
             Self::FabItem(_) => crate::fab_menu::item_spec(),
             Self::Chip(look) => look.spec(),
+            Self::Time(look) => look.spec(),
         }
     }
 }

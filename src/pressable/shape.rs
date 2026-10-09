@@ -89,7 +89,7 @@ pub(crate) fn rounded(rect: Rect, radii: [f32; 4]) -> Result<Path> {
 }
 
 /// A quarter circle from `from` to `to` around the square corner `at`.
-fn corner(b: &mut PathBuilder, from: Point, to: Point, at: Point, radius: f32) {
+pub(crate) fn corner(b: &mut PathBuilder, from: Point, to: Point, at: Point, radius: f32) {
     if radius <= 0.0 {
         b.line_to(to);
         return;

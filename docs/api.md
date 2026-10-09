@@ -211,3 +211,34 @@ toolbar.icon_button(icons::edit(), "编辑")?;
 标签页的指示器由 `TabRowControl` 绘制：它需要选中标签的布局位置，因此通过 Aegle 的 `place` 钩子在每次几何更新后读取选中标签的边界，写入行控件的目标，绘制时以弹簧滑过去；选择改变只标记几何脏，不额外遍历。
 
 应用栏与工具栏是 `SurfaceControl` 配不同种类；鲜明工具栏在自身子树上为标准图标按钮与文字按钮设置种类皮肤（on primary container）。为此 Aegle 修正了一个问题：控件类型随状态改变（如图标按钮换样式、切换按钮选中）时，子树的种类皮肤会按新类型重新解析（Aegle 提交 b201d1d）。
+
+## 输入
+
+```rust
+let name = TextField::new(&column, FieldStyle::Outlined, "姓名")?;
+name.set_supporting(Some("与证件一致"))?;
+name.set_leading_icon(Some(icons::person()))?;
+name.set_clearable(true)?;
+name.on_change(|field| { println!("{}", field.text()?); Ok(()) })?;
+let bio = TextField::multiline(&column, FieldStyle::Filled, "简介")?;
+bio.set_counter(Some(120))?;
+
+let search = Search::new(&column, "搜索邮件")?;    // 输入时打开结果视图
+List::new(search.results())?.clickable_item("Lisbon")?;
+
+let date = DatePicker::modal(&root)?;              // 或 docked(&parent)
+date.set_selected(Date::new(2026, 8, 17))?;
+date.on_confirm(|picker| { let _ = picker.selected()?; Ok(()) })?;
+date.show()?;
+
+let time = TimePicker::inline(&column)?;           // 或 modal(&root)
+time.set_24_hour(true)?;
+time.set_time(19, 30)?;
+
+let carousel = Carousel::new(&column, 180.0, 200.0)?;
+carousel.item(true)?.on_click(|_| Ok(()))?;
+```
+
+`TextField` 不是新的文本控件：`FieldControl` 包着 `aegle_controls::TextField`（编辑、输入法、选择、无障碍），只负责外框、标签、图标、辅助文字与计数的绘制和尺寸。为此 Aegle 增加了两个通用接口（Aegle 提交 14d23fe）：`Control::text_viewport`，让外框控件声明编辑器实际可用的文字区域（光标滚动据此保持在图标之间）；`Editor::changes()`，不清空地读取编辑器的变更，外框据此报告改变并更新计数。
+
+日期与时间选择器各是一个绘制整块网格或表盘的控件（`CalendarControl`、`DialControl`），而不是几十个按钮节点：命中、光标与范围带都在控件内计算，节点数与日期多少无关。`Date` 是不依赖外部库的公历日期（`days`/`from_days` 为距 1970-01-01 的天数），`Date::new` 是 `const fn`，可写常量。搜索视图是 Aegle 的 `Popup`，轮播是一个视口控件，把滚轮的竖向分量转为横向滚动。

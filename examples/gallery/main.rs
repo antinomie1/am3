@@ -6,6 +6,7 @@
 //! after its ripple has grown. No compositor is needed.
 //!
 //! `cargo run --example gallery [-- OUTPUT_DIR]`
+mod inputs;
 mod navigation;
 mod shots;
 mod surfaces;
@@ -215,6 +216,7 @@ fn main() -> Result {
         .iter()
         .chain(surfaces::SURFACES)
         .chain(navigation::NAVIGATION)
+        .chain(inputs::INPUTS)
     {
         shot(&fonts, dir, name, *size, cells)?;
     }

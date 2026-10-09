@@ -19,6 +19,7 @@ pub struct Dialog {
     surface: Container,
     content: Container,
     actions: Container,
+    headline: Text,
 }
 
 impl std::ops::Deref for Dialog {
@@ -64,6 +65,7 @@ impl Dialog {
             surface,
             content,
             actions,
+            headline: title,
         };
         let closing = dialog.layer.clone();
         dialog.layer.on_dismiss(move || closing.dismiss())?;
@@ -85,6 +87,11 @@ impl Dialog {
     pub fn action(&self, text: &str) -> Result<Button> {
         self.actions.set_visible(true)?;
         Button::new(&self.actions, ButtonStyle::Text, text)
+    }
+
+    /// The headline.
+    pub fn headline(&self) -> &Text {
+        &self.headline
     }
 
     /// The dialog's surface, for sizing it.

@@ -191,3 +191,33 @@ M3 Expressive 工具栏：停靠工具栏贴底横跨窗口，64 dp 高，操作
 ![停靠工具栏](images/toolbars.png)
 
 ![浮动工具栏](images/floating-toolbars.png)
+
+## 文本框
+
+填充（surface container highest，上方圆角 4 dp，底部活动指示线）与描边（4 dp 圆角，浮动标签处描边留缺口）两种。56 dp 高，body large 文字；标签在输入或聚焦时以 0.75 倍缩放浮到上方，聚焦时为 primary 色、指示线 2 dp。可带前导/尾随图标（文字区随之内缩）、清除按钮、占位文字、辅助文字与字数计数（下方 20 dp）、错误状态（error 色）、密码与只读；多行文本框随内容增高。编辑、光标、选择、输入法与无障碍全部由 Aegle 的编辑器提供。
+
+![文本框](images/text-fields.png)
+
+## 搜索
+
+搜索栏是 56 dp 高的 surface container high 胶囊，前导搜索图标，可带尾随图标；输入文字时在栏下方打开停靠的搜索视图（28 dp 圆角），焦点留在栏中，清空后关闭。
+
+![搜索](images/search.png)
+
+## 日期选择器
+
+停靠式（surface container high，16 dp 圆角，3 级阴影）与模态（对话框，标题 “Select date” 加 headline large 选中日期，取消/确定）。48 dp 网格，40 dp 圆形日期：选中为 primary 圆，今天为 primary 描边圆；范围选择时两端为 primary 圆，中间为 secondary container 带。前后月按钮，方向键移动光标（PageUp/PageDown 换月），Enter 或空格选择。
+
+![日期选择器](images/date-pickers.png)
+
+## 时间选择器
+
+96 × 80 dp 的小时与分钟字段（display large），选中字段为 primary container；12 小时制带上下排列的 AM/PM 选择器（tertiary container）。256 dp 表盘：48 dp 选择器与指针，24 小时制外圈 00–11、内圈 12–23。点选或拖动表盘设置数值，选好小时后自动切换到分钟；方向键按 1 小时或 5 分钟步进。可嵌入布局，也可作为模态对话框。
+
+![时间选择器](images/time-pickers.png)
+
+## 轮播
+
+无约束（uncontained）布局：28 dp 圆角的等宽项目，间隔 8 dp，横向滚动越过边缘；竖向滚轮也横向滚动。项目裁剪内容（图片等），可点击。
+
+![轮播](images/carousel.png)

@@ -55,3 +55,39 @@ pub fn click(ui: &Ui, node: &Node) -> Result {
     press(ui, node)?;
     release(ui, node)
 }
+
+/// Presses and releases `key` with `modifiers`, then runs callbacks.
+pub fn key_with(ui: &Ui, key: aegle_ui::Key, modifiers: Modifiers) -> Result {
+    for pressed in [true, false] {
+        ui.key(aegle_ui::KeyInput {
+            key,
+            text: "",
+            modifiers,
+            pressed,
+            repeat: false,
+        })?;
+    }
+    ui.dispatch_callbacks()?;
+    ui.refresh()?;
+    Ok(())
+}
+
+/// Presses and releases `key`, then runs callbacks.
+pub fn key(ui: &Ui, key: aegle_ui::Key) -> Result {
+    key_with(ui, key, Modifiers::default())
+}
+
+/// A primary click at a window point.
+pub fn click_at(ui: &Ui, at: Point) -> Result {
+    ui.refresh()?;
+    ui.pointer(
+        PointerId(1),
+        PointerKind::Down { clicks: 1 },
+        at,
+        Modifiers::default(),
+    )?;
+    ui.pointer(PointerId(1), PointerKind::Up, at, Modifiers::default())?;
+    ui.dispatch_callbacks()?;
+    ui.refresh()?;
+    Ok(())
+}

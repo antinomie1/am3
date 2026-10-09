@@ -64,20 +64,26 @@ impl Shape {
 }
 
 pub(crate) fn path(rect: Rect, left: f32, right: f32) -> Result<Path> {
+    rounded(rect, [left, right, right, left])
+}
+
+/// A rectangle with its top-left, top-right, bottom-right and bottom-left
+/// corners rounded by their own radii.
+pub(crate) fn rounded(rect: Rect, radii: [f32; 4]) -> Result<Path> {
     let half = rect.size.width.min(rect.size.height) / 2.0;
-    let (l, r) = (left.min(half), right.min(half));
+    let [tl, tr, br, bl] = radii.map(|r| r.clamp(0.0, half));
     let (x0, y0) = (rect.origin.x, rect.origin.y);
     let (x1, y1) = (x0 + rect.size.width, y0 + rect.size.height);
     let p = Point::new;
     let mut b = PathBuilder::new();
-    b.move_to(p(x0 + l, y0)).line_to(p(x1 - r, y0));
-    corner(&mut b, p(x1 - r, y0), p(x1, y0 + r), p(x1, y0), r);
-    b.line_to(p(x1, y1 - r));
-    corner(&mut b, p(x1, y1 - r), p(x1 - r, y1), p(x1, y1), r);
-    b.line_to(p(x0 + l, y1));
-    corner(&mut b, p(x0 + l, y1), p(x0, y1 - l), p(x0, y1), l);
-    b.line_to(p(x0, y0 + l));
-    corner(&mut b, p(x0, y0 + l), p(x0 + l, y0), p(x0, y0), l);
+    b.move_to(p(x0 + tl, y0)).line_to(p(x1 - tr, y0));
+    corner(&mut b, p(x1 - tr, y0), p(x1, y0 + tr), p(x1, y0), tr);
+    b.line_to(p(x1, y1 - br));
+    corner(&mut b, p(x1, y1 - br), p(x1 - br, y1), p(x1, y1), br);
+    b.line_to(p(x0 + bl, y1));
+    corner(&mut b, p(x0 + bl, y1), p(x0, y1 - bl), p(x0, y1), bl);
+    b.line_to(p(x0, y0 + tl));
+    corner(&mut b, p(x0, y0 + tl), p(x0 + tl, y0), p(x0, y0), tl);
     b.close();
     Ok(b.finish(FillRule::NonZero)?)
 }

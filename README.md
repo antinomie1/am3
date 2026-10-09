@@ -32,7 +32,7 @@ save.on_click(|_| Ok(()))?;
 - 任何 Aegle 主题（包括 `Theme::dark()`）都能得到一致的 Material 配色；
 - `am3::theme(seed, mode)` 反过来从种子色生成 Aegle 主题，背景、表面、文字、强调色等字段取自同一方案。
 
-应用内容可以用 `Role::Primary.token()` 等颜色令牌（`am3.color.primary`）绑定到当前方案。
+应用内容可以用 `Role::primary.token()` 等颜色令牌（`am3.color.primary`）绑定到当前方案。
 
 ## 许可
 

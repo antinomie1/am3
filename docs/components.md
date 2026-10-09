@@ -99,3 +99,51 @@ M3 Expressive 滑块：粗轨道被 4 dp 竖条手柄和两侧 6 dp 间隙分开
 38 dp 形状在 Material 的七种形状（soft burst、9 边 cookie、五边形、pill、sunny、4 边 cookie、椭圆）之间每 0.65 s 以带回弹的曲线变形，同时旋转；contained 变体位于 48 dp primary container 圆上。减少动态效果时停在第一个形状。
 
 ![加载指示器](images/loading.png)
+
+## 卡片
+
+12 dp 圆角、16 dp 内边距的内容容器，三种样式：elevated（surface container low 与 1 级阴影）、filled（surface container highest）、outlined（surface 与 outline variant 描边）。可点击的卡片本身是按钮：状态层、涟漪、焦点环，悬停时阴影升高一级。
+
+![卡片](images/cards.png)
+
+## 对话框
+
+模态，28 dp 圆角的 surface container high 表面位于 32% scrim 之上，最小 280 dp、最大 560 dp 宽。可选图标（secondary 色，居中，标题随之居中）、headline small 标题、body medium 辅助文字与末尾对齐的文字按钮。打开时焦点移入第一个控件，Tab 在对话框内循环，Escape 或点击 scrim 关闭，关闭后焦点回到打开前的位置。进入时淡入并从 80% 放大，退出时淡出。还可切换为全屏对话框。
+
+![对话框](images/dialogs.png)
+
+## 底部表与侧边表
+
+模态底部表贴在窗口底边，顶部两角 28 dp 圆角，带拖动手柄，最宽 640 dp，从下方滑入；模态侧边表贴在窗口末端，全高 360 dp 宽，内侧两角 16 dp 圆角，带标题与关闭按钮，从侧边滑入。两者都在 scrim 之上，行为与对话框相同。标准（非模态）底部表与侧边表放在应用布局中，与主内容并列。
+
+![底部表与侧边表](images/sheets.png)
+
+## 信息提示条（Snackbar）
+
+窗口底部的 inverse surface 条，4 dp 圆角、3 级阴影，body medium 文字，可选 inverse primary 色的操作按钮与关闭按钮。不阻挡其他输入，按给定时长（短 4 s、长 10 s）自动关闭，操作或关闭按钮也会关闭它。
+
+![信息提示条](images/snackbars.png)
+
+## 菜单
+
+Aegle 菜单（键盘导航、子菜单、勾选与单选项、快捷键提示、定位）配上 Material 的外观：16 dp 圆角的 surface container 弹出层与 2 级阴影，44 dp 高的 body large 菜单项，状态层为 12 dp 圆角、内缩 6 dp。
+
+![菜单](images/menus.png)
+
+## 工具提示
+
+普通工具提示沿用 Aegle 的提示（指针停留后出现，按下、Escape、离开时隐藏，并作为控件的无障碍描述），外观为 inverse surface、4 dp 圆角。富工具提示是锚点下方 12 dp 圆角的 surface container 表面，可带副标题、辅助文字与操作按钮，由应用显示和隐藏。
+
+![工具提示](images/tooltips.png)
+
+## 列表与分隔线
+
+列表项是一行：可选的前导元素（图标、头像、复选框）、body large 标题与可选的 body medium 辅助文字、可选的尾随元素（开关、图标、label small 文字）。单行 56 dp，带辅助文字 72 dp。可点击的列表项有状态层与涟漪。分隔线为 1 dp outline variant，可横可竖，可从两端内缩。
+
+![列表](images/lists.png)
+
+## 徽章
+
+小徽章是 6 dp 的 error 色圆点；大徽章是 16 dp 高的胶囊，label small 数字，超过 999 显示 “999+”。徽章位于控件中央 24 dp 图标的右上角（从右到左时为左上角），作为控件的装饰绘制，不占用节点。
+
+![徽章](images/badges.png)

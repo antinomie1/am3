@@ -5,7 +5,7 @@ use am3::*;
 
 use crate::{Setup, hover, press};
 
-type Shot = (&'static str, (f32, f32), &'static [(&'static str, Setup)]);
+pub(crate) type Shot = (&'static str, (f32, f32), &'static [(&'static str, Setup)]);
 
 fn styles(host: &Container) -> Result<aegle_ui::Container> {
     let row = host.row()?;

@@ -7,25 +7,9 @@ mod common;
 
 use std::{cell::Cell, rc::Rc};
 
-use aegle_controls::KeyInput;
 use aegle_ui::{Key, Modifiers, PointerId, PointerKind, Result};
 use am3::{Checkbox, Radio, Slider, Switch};
-use common::{click, ui};
-
-fn key(ui: &aegle_ui::Ui, key: Key) -> Result {
-    for pressed in [true, false] {
-        ui.key(KeyInput {
-            key,
-            text: "",
-            modifiers: Modifiers::default(),
-            pressed,
-            repeat: false,
-        })?;
-    }
-    ui.dispatch_callbacks()?;
-    ui.refresh()?;
-    Ok(())
-}
+use common::{click, key, ui};
 
 #[test]
 fn checkboxes_radios_and_switches_change() -> Result {

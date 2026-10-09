@@ -7,6 +7,7 @@
 //!
 //! `cargo run --example gallery [-- OUTPUT_DIR]`
 mod shots;
+mod surfaces;
 
 use std::{
     cell::RefCell,
@@ -55,6 +56,15 @@ pub(crate) fn press(ui: &Ui, node: &impl Deref<Target = Node>) -> Result {
     let at = center(node)?;
     let down = PointerKind::Down { clicks: 1 };
     ui.pointer(PointerId(1), down, at, Modifiers::default())
+}
+
+/// A click on the window's corner, so focus moved afterwards shows no
+/// ring, as after pointer input.
+pub(crate) fn pointer_mode(ui: &Ui) -> Result {
+    let at = Point::new(1.0, 1.0);
+    let down = PointerKind::Down { clicks: 1 };
+    ui.pointer(PointerId(1), down, at, Modifiers::default())?;
+    ui.pointer(PointerId(1), PointerKind::Up, at, Modifiers::default())
 }
 
 /// Lays out, settles and records one cell.
@@ -200,7 +210,7 @@ fn main() -> Result {
     let dir = Path::new(&output);
     std::fs::create_dir_all(dir)?;
     let fonts = Rc::new(RefCell::new(fonts()?));
-    for (name, size, cells) in shots::ALL {
+    for (name, size, cells) in shots::ALL.iter().chain(surfaces::SURFACES) {
         shot(&fonts, dir, name, *size, cells)?;
     }
     Ok(())

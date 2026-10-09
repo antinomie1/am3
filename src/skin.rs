@@ -154,8 +154,11 @@ pub(crate) fn shadow(
 
 /// Declares pressable kinds, each with a skin computing its resting colors
 /// from the scheme: `NAME = "Name", skin_fn => |scheme, selected| paint;`.
+/// `container` before the list declares containers, whose padding insets
+/// their children.
 macro_rules! kinds {
-    ($($(#[$doc:meta])* $kind:ident = $name:literal, $skin:ident => |$s:ident, $on:ident| $paint:expr;)*) => {$(
+    (container $($rest:tt)*) => { $crate::skin::kinds!(@true $($rest)*); };
+    (@$container:literal $($(#[$doc:meta])* $kind:ident = $name:literal, $skin:ident => |$s:ident, $on:ident| $paint:expr;)*) => {$(
         fn $skin(theme: &aegle_ui::Theme, state: aegle_ui::VisualState) -> aegle_ui::Appearance {
             let $s = &$crate::Scheme::of(theme);
             let $on = state.checked;
@@ -166,9 +169,10 @@ macro_rules! kinds {
             name: $name,
             skin: $skin,
             accepts: $crate::skin::PRESSABLE,
-            container: false,
+            container: $container,
         };
     )*};
+    ($($rest:tt)*) => { $crate::skin::kinds!(@false $($rest)*); };
 }
 pub(crate) use kinds;
 

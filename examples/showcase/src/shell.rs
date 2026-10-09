@@ -5,7 +5,7 @@
 
 use std::{cell::Cell, rc::Rc};
 
-use aegle::{Color, Container, Preferences, Result, Window, Wrap};
+use aegle::{Color, ColorSlot, Container, Preferences, Result, Window, Wrap};
 use am3::{
     Button, IconButton, Menu, Mode, RichTooltip, Role, Segment, SplitButton, Switch, Text,
     set_tooltip, tokens::typescale,
@@ -67,10 +67,14 @@ impl Look {
     }
 }
 
-/// A titled section whose content wraps in a row.
+/// A titled section whose content wraps in a row, on a darker rounded
+/// surface than the page, as the navigation is.
 pub fn section(page: &Container, title: &str) -> Result<Container> {
     let column = page.column()?;
     column.set_gap(12.0)?;
+    column.set_padding(20.0)?;
+    column.set_radius(24.0)?;
+    column.bind_color(ColorSlot::Background, Role::surface_container.token())?;
     Text::new(&column, typescale::TITLE_MEDIUM, Role::on_surface, title)?;
     let row = column.row()?;
     row.set_gap(12.0)?;

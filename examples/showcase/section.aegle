@@ -1,7 +1,11 @@
-// A titled section whose content wraps in a row, centered or top-aligned.
+// A titled section whose content wraps in a row, centered or top-aligned,
+// on a darker rounded surface than the page, as the navigation is.
 component Section(title: string) {
     Column {
         gap: 12dp
+        padding: 20dp
+        radius: 24dp
+        background: token("am3.color.surface-container")
         MdText { text: title; typescale: title_medium }
         Row { gap: 12dp; wrap: wrap; align: center; slot }
     }
@@ -10,6 +14,9 @@ component Section(title: string) {
 component TopSection(title: string) {
     Column {
         gap: 12dp
+        padding: 20dp
+        radius: 24dp
+        background: token("am3.color.surface-container")
         MdText { text: title; typescale: title_medium }
         Row { gap: 12dp; wrap: wrap; align: start; slot }
     }

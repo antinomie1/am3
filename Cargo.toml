@@ -5,6 +5,7 @@ version = "0.1.0"
 edition = "2024"
 rust-version = "1.88"
 license = "MIT OR Apache-2.0"
+repository = "https://github.com/antinomie1/am3"
 readme = "README.md"
 keywords = ["gui", "material", "material-design", "controls"]
 categories = ["gui"]
@@ -18,17 +19,17 @@ motion = ["aegle-ui/motion", "aegle-widgets/motion", "aegle-loader/motion"]
 accessibility = ["aegle-ui/accessibility", "aegle-widgets/accessibility", "dep:aegle-access"]
 
 [dependencies]
-aegle-ui = { path = "../aegle/crates/aegle-ui" }
-aegle-widgets = { path = "../aegle/crates/aegle-widgets" }
-aegle-loader = { path = "../aegle/crates/aegle-loader" }
-aegle-controls = { path = "../aegle/crates/aegle-controls", features = ["text"] }
-aegle-motion = { path = "../aegle/crates/aegle-motion" }
-aegle-layout = { path = "../aegle/crates/aegle-layout" }
-aegle-text = { path = "../aegle/crates/aegle-text", features = ["scene"] }
-aegle-access = { path = "../aegle/crates/aegle-access", optional = true }
+aegle-ui = { git = "https://github.com/antinomie1/aegle", branch = "main" }
+aegle-widgets = { git = "https://github.com/antinomie1/aegle", branch = "main" }
+aegle-loader = { git = "https://github.com/antinomie1/aegle", branch = "main" }
+aegle-controls = { git = "https://github.com/antinomie1/aegle", branch = "main", features = ["text"] }
+aegle-motion = { git = "https://github.com/antinomie1/aegle", branch = "main" }
+aegle-layout = { git = "https://github.com/antinomie1/aegle", branch = "main" }
+aegle-text = { git = "https://github.com/antinomie1/aegle", branch = "main", features = ["scene"] }
+aegle-access = { git = "https://github.com/antinomie1/aegle", branch = "main", optional = true }
 
 [dev-dependencies]
-aegle-render-software = { path = "../aegle/crates/aegle-render-software", features = ["text"] }
+aegle-render-software = { git = "https://github.com/antinomie1/aegle", branch = "main", features = ["text"] }
 png = "0.18"
 
 [lints.rust]

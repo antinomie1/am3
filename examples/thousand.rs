@@ -116,7 +116,7 @@ ScrollView {
 
 fn main() -> Result {
     let mut text = TextSystem::new();
-    let font = include_bytes!("../../aegle/tests/assets/aegle-test-cjk.otf");
+    let font = include_bytes!("../tests/assets/aegle-test-cjk.otf");
     let families = text.register_fonts(Blob::new(Arc::new(font.as_slice())))?;
     let ids = families.iter().map(|(id, _)| *id);
     text.collection_mut()

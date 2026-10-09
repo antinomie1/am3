@@ -1,6 +1,6 @@
 # am3
 
-am3 是基于 [Aegle](../aegle) 的 Material 3 Expressive 控件库，是一个单独的 crate。它只负责控件本身：保留树、布局、输入、焦点、无障碍、主题切换、过渡与窗口都由 Aegle 提供。am3 也只通过 Aegle 的公开扩展接口实现，和第三方控件库走同一条路径：`Control` trait、`ControlKind` 皮肤、`handle!` 句柄与 `element!` 标记元素。
+am3 是基于 [Aegle](https://github.com/antinomie1/aegle) 的 Material 3 Expressive 控件库，是一个单独的 crate。它只负责控件本身：保留树、布局、输入、焦点、无障碍、主题切换、过渡与窗口都由 Aegle 提供。am3 也只通过 Aegle 的公开扩展接口实现，和第三方控件库走同一条路径：`Control` trait、`ControlKind` 皮肤、`handle!` 句柄与 `element!` 标记元素。
 
 ```rust
 use am3::{Button, ButtonStyle, Mode, icons};
@@ -56,6 +56,23 @@ let view = aegle::loader::Program::load_with("inbox.aegle", &am3::elements())?.b
 
 应用内容可以用 `Role::primary.token()` 等颜色令牌（`am3.color.primary`）绑定到当前方案。
 
+## 使用
+
+am3 通过 git 依赖引用 Aegle 的 `main` 分支，单独克隆即可编译：
+
+```toml
+[dependencies]
+am3 = { git = "https://github.com/antinomie1/am3" }
+```
+
+同时修改本地的 Aegle 时，用 `[patch]` 指向本地副本：
+
+```toml
+[patch."https://github.com/antinomie1/aegle"]
+aegle-ui = { path = "../aegle/crates/aegle-ui" }
+# 其余 aegle-* crate 同理
+```
+
 ## 许可
 
-图标路径数据来自 Material Icons（Apache License 2.0）。
+am3 采用 MIT（[LICENSE-MIT](LICENSE-MIT)）或 Apache-2.0（[LICENSE-APACHE](LICENSE-APACHE)）双许可，使用者任选其一。图标路径数据来自 Material Icons（Apache License 2.0）。

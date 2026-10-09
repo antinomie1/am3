@@ -1,4 +1,4 @@
-//! A headless Ui under an am3 theme with Aegle's bundled test font.
+//! A headless Ui under an am3 theme with the bundled test font.
 
 #![allow(dead_code)]
 
@@ -12,7 +12,7 @@ pub const SEED: aegle_ui::Color = aegle_ui::Color::rgb(0x67, 0x50, 0xA4);
 
 pub fn ui() -> Result<Ui> {
     let mut fonts = TextSystem::new();
-    let font = include_bytes!("../../../aegle/tests/assets/aegle-test-cjk.otf");
+    let font = include_bytes!("../assets/aegle-test-cjk.otf");
     let families = fonts.register_fonts(Blob::new(Arc::new(font.as_slice())))?;
     let ids = families.iter().map(|(id, _)| *id);
     fonts

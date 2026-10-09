@@ -177,7 +177,7 @@ fn shot(
     Ok(())
 }
 
-/// Inter from the system when present, else Aegle's bundled test font.
+/// Inter from the system when present, else the bundled test font.
 fn fonts() -> Result<TextSystem> {
     let mut text = TextSystem::new();
     let dir = Path::new("/usr/share/fonts/opentype/inter");
@@ -190,7 +190,7 @@ fn fonts() -> Result<TextSystem> {
         files.push(
             concat!(
                 env!("CARGO_MANIFEST_DIR"),
-                "/../aegle/tests/assets/aegle-test-cjk.otf"
+                "/tests/assets/aegle-test-cjk.otf"
             )
             .into(),
         );

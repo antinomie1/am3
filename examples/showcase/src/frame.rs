@@ -3,7 +3,7 @@
 
 use std::rc::Rc;
 
-use aegle::{Align, App, Color, ColorSlot, Container, Insets, Length, Result, WindowOptions};
+use aegle::{Align, App, ColorSlot, Container, Insets, Length, Result, WindowOptions};
 use am3::{NavigationRail, Role, SegmentedButton, Switch, Text, icons, tokens::typescale};
 
 use crate::shell::{PAGES, SEEDS, Say, Shell};
@@ -17,10 +17,9 @@ pub fn build(app: &App) -> Result<Shell> {
             ..Default::default()
         },
     )?;
-    // The navigation sits on a darker surface than the page, as on
-    // m3.material.io; the page is a lighter rounded pane without an outline.
-    // Bound to tokens, both follow theme changes.
-    window.bind_color(ColorSlot::Background, Role::surface_container.token())?;
+    // As on m3.material.io, the window's background is the surface, and the
+    // full-height navigation and the rounded page pane sit on the darker
+    // surface container; both are bound to tokens and follow theme changes.
     window.set_padding(0.0)?;
 
     let body = window.row()?;
@@ -28,13 +27,12 @@ pub fn build(app: &App) -> Result<Shell> {
     // Without it the row grows to the page's height and never scrolls.
     body.set_min_height(0.0)?;
     let rail = NavigationRail::new(&body)?;
-    // The rail shows the window's darker surface instead of its own.
-    rail.set_background(Color::TRANSPARENT)?;
+    rail.bind_color(ColorSlot::Background, Role::surface_container.token())?;
     let main = body.column()?;
     main.set_grow(1.0)?;
     main.set_min_height(0.0)?;
     main.set_padding(Insets {
-        left: Length::Px(0.0),
+        left: Length::Px(16.0),
         top: Length::Px(0.0),
         right: Length::Px(16.0),
         bottom: Length::Px(16.0),
@@ -74,7 +72,7 @@ pub fn build(app: &App) -> Result<Shell> {
     scroll.set_shrink(1.0)?;
     scroll.set_min_height(0.0)?;
     scroll.set_padding(24.0)?;
-    scroll.bind_color(ColorSlot::Background, Role::surface.token())?;
+    scroll.bind_color(ColorSlot::Background, Role::surface_container.token())?;
     scroll.set_radius(24.0)?;
 
     let say: Say = Rc::new(move |text| status.set_text(&format!("最近操作：{text}")));

@@ -19,9 +19,9 @@ Window {
     state side: bool = false
     state archived: bool = false
     state progress: float = 0.4
-    // The navigation sits on a darker surface than the page, as on
-    // m3.material.io; the page is a lighter rounded pane without an outline.
-    background: token("am3.color.surface-container")
+    // As on m3.material.io, the window's background is the surface, and the
+    // full-height navigation and the rounded page pane sit on the darker
+    // surface container.
     padding: 0dp
     Row {
         grow: 1
@@ -29,8 +29,7 @@ Window {
         min_height: 0dp
         MdNavigationRail {
             expanded: wide
-            // The rail shows the window's darker surface instead of its own.
-            background: #00000000
+            background: token("am3.color.surface-container")
             MdNavItem { icon: "star"; text: "按钮"; on clicked { page = 0 } }
             MdNavItem { icon: "check"; text: "选择"; on clicked { page = 1 } }
             MdNavItem { icon: "keyboard"; text: "输入"; on clicked { page = 2 } }
@@ -40,7 +39,7 @@ Window {
         Column {
             grow: 1
             min_height: 0dp
-            padding: [0dp, 16dp, 16dp, 0dp]
+            padding: [0dp, 16dp, 16dp, 16dp]
             Row {
                 padding: 16dp
                 gap: 16dp
@@ -67,7 +66,7 @@ Window {
                 shrink: 1
                 min_height: 0dp
                 padding: 24dp
-                background: token("am3.color.surface")
+                background: token("am3.color.surface-container")
                 radius: 24dp
                 Column { visible: page == 0; shrink: 0; ButtonsPage { on say(text) { last = text } } }
                 Column { visible: page == 1; shrink: 0; SelectionPage { on say(text) { last = text } } }
@@ -106,6 +105,7 @@ Window {
                         title: "列表"
                         MdList {
                             width: 420dp
+                            background: #00000000
                             MdListItem {
                                 headline: "Ada Lovelace"; clickable: true; supporting: "周五一起吃午饭？"
                                 leading: "person"; trailing_text: "15 分钟"; on clicked { last = "Ada Lovelace" }

@@ -147,3 +147,47 @@ Aegle 菜单（键盘导航、子菜单、勾选与单选项、快捷键提示�
 小徽章是 6 dp 的 error 色圆点；大徽章是 16 dp 高的胶囊，label small 数字，超过 999 显示 “999+”。徽章位于控件中央 24 dp 图标的右上角（从右到左时为左上角），作为控件的装饰绘制，不占用节点。
 
 ![徽章](images/badges.png)
+
+## 导航栏
+
+紧凑窗口底部的 3–5 个目的地，surface container 上 64 dp 高（expressive）。选中项的图标位于 56 × 32 dp 的 secondary container 指示器中，指示器从中心展开；标签为 label medium，选中时 secondary 色。目的地可带徽章。
+
+![导航栏](images/navigation-bar.png)
+
+## 导航栏杆（Navigation rail）
+
+中等及以上窗口起始边的目的地。收起时 96 dp 宽，标签位于指示器下方；展开时至少 220 dp 宽，目的地为 56 dp 高的行内胶囊（M3 Expressive 以展开的导航栏杆取代标准抽屉）。顶部可放菜单按钮与 FAB。
+
+![导航栏杆](images/navigation-rail.png)
+
+## 导航抽屉
+
+360 dp 宽，目的地为 56 dp 高的全圆角胶囊，可分节（title small 节标题与内缩分隔线）。标准抽屉位于布局中；模态抽屉从起始边滑入，位于 scrim 之上，选择目的地后关闭。
+
+![导航抽屉](images/navigation-drawer.png)
+
+## 标签页
+
+主标签页：title small 标签，可在上方带图标（64 dp 高，否则 48 dp），选中为 primary 色，3 dp 指示器只覆盖内容宽度、上方圆角；次级标签页：选中为 on surface 色，2 dp 指示器覆盖整个标签。固定标签页平分宽度；指示器以 expressive 空间弹簧滑到选中的标签，下方有 1 dp 分隔线。
+
+![标签页](images/tabs.png)
+
+## 顶部应用栏
+
+小型（64 dp，标题 title large）、居中、medium flexible（112 dp，标题单独一行 headline medium，可带副标题）、large flexible（120 dp，display small）。前导导航按钮与尾随操作均为标准图标按钮；内容滚动到栏下时 `set_scrolled(true)` 切换为 surface container。
+
+![顶部应用栏](images/top-app-bars.png)
+
+## 底部应用栏
+
+80 dp 高的 surface container 栏，操作图标按钮与末端 FAB。
+
+![底部应用栏](images/bottom-app-bar.png)
+
+## 工具栏
+
+M3 Expressive 工具栏：停靠工具栏贴底横跨窗口，64 dp 高，操作均匀分布；浮动工具栏是 64 dp 的胶囊，横向或纵向，3 级阴影。两者都有标准（surface container）与鲜明（primary container，内容 on primary container）两种配色。
+
+![停靠工具栏](images/toolbars.png)
+
+![浮动工具栏](images/floating-toolbars.png)

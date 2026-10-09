@@ -278,6 +278,17 @@ pub(crate) fn add(parent: &Container, control: SurfaceControl, padding: f32) -> 
     Ok(Container(node))
 }
 
+/// Gives a surface another kind, as when its role changes with scrolling.
+pub(crate) fn set_kind(surface: &Container, kind: &'static ControlKind) -> Result {
+    surface.change(|state, id| {
+        state
+            .control_as::<SurfaceControl>(id)
+            .ok_or(aegle_ui::UiError::WrongKind)?
+            .kind = kind;
+        state.dirty_visual_state(id)
+    })
+}
+
 /// The three card styles.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum CardStyle {

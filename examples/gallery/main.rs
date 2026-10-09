@@ -6,6 +6,7 @@
 //! after its ripple has grown. No compositor is needed.
 //!
 //! `cargo run --example gallery [-- OUTPUT_DIR]`
+mod navigation;
 mod shots;
 mod surfaces;
 
@@ -210,7 +211,11 @@ fn main() -> Result {
     let dir = Path::new(&output);
     std::fs::create_dir_all(dir)?;
     let fonts = Rc::new(RefCell::new(fonts()?));
-    for (name, size, cells) in shots::ALL.iter().chain(surfaces::SURFACES) {
+    for (name, size, cells) in shots::ALL
+        .iter()
+        .chain(surfaces::SURFACES)
+        .chain(navigation::NAVIGATION)
+    {
         shot(&fonts, dir, name, *size, cells)?;
     }
     Ok(())

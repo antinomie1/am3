@@ -175,3 +175,39 @@ Badge::new(&icon_button)?.show_count(3)?;
 菜单与普通工具提示直接复用 aegle-widgets：`Menu` 只是在 Aegle 菜单弹出层上设置 `PANEL`、`MENU_ITEM` 的种类皮肤、主题覆盖（字号、内边距）与阴影，子菜单经 `Menu::submenu` 得到同样外观；`set_tooltip` 在根节点上设置 `TOOLTIP` 皮肤后调用 Aegle 的 `set_tooltip`。徽章是 Aegle 的 `Decorator`，不增加节点。
 
 Aegle 在线性光空间混合颜色，而 Material 的状态层不透明度按 sRGB 混合定义。容器颜色已知的控件（实色按钮、菜单项）在 sRGB 中预先混合成不透明色；透明容器上的状态层（文字按钮、标准图标按钮、列表项）在深色背景上会比规范略明显。
+
+## 导航与应用结构
+
+```rust
+let bar = NavigationBar::new(&root)?;
+let mail = bar.item(icons::mail(), "邮件")?;       // 第一个目的地自动选中
+mail.badge()?.show_count(3)?;
+mail.on_click(|item| { /* 切换页面 */ Ok(()) })?;
+
+let rail = NavigationRail::new(&row)?;
+Fab::new(rail.header()?, icons::edit(), "写邮件")?;
+rail.item(icons::mail(), "收件箱")?;
+rail.set_expanded(true)?;
+
+let drawer = NavigationDrawer::modal(&root)?;      // 或 standard(&parent)
+drawer.headline("邮件")?;
+drawer.item(icons::mail(), "收件箱")?;
+drawer.show()?;
+
+let tabs = Tabs::new(&column, TabStyle::Primary)?;
+tabs.tab(Some(icons::send()), "航班")?;
+
+let top = TopAppBar::new(&column, AppBarStyle::Medium, "标题")?;
+top.navigation(icons::arrow_back(), "返回")?;
+top.action(icons::more_vert(), "更多")?;
+top.set_scrolled(true)?;
+
+let toolbar = Toolbar::floating(&parent, ToolbarColor::Vibrant, false)?;
+toolbar.icon_button(icons::edit(), "编辑")?;
+```
+
+导航栏、栏杆与抽屉共用 `NavItemControl`：堆叠（指示器下方标签）或行内（胶囊）两种排布，选中时在 `Deferred` 中取消同一导航组件内其他目的地（组件根节点下的全部 `NavItemControl`，可跨抽屉的分节）。栏杆展开/收起只是切换排布并按新的字体角色重排标签。目的地的徽章共享控件上次绘制的图标位置，所以无论排布如何都贴在图标右上角。
+
+标签页的指示器由 `TabRowControl` 绘制：它需要选中标签的布局位置，因此通过 Aegle 的 `place` 钩子在每次几何更新后读取选中标签的边界，写入行控件的目标，绘制时以弹簧滑过去；选择改变只标记几何脏，不额外遍历。
+
+应用栏与工具栏是 `SurfaceControl` 配不同种类；鲜明工具栏在自身子树上为标准图标按钮与文字按钮设置种类皮肤（on primary container）。为此 Aegle 修正了一个问题：控件类型随状态改变（如图标按钮换样式、切换按钮选中）时，子树的种类皮肤会按新类型重新解析（Aegle 提交 b201d1d）。

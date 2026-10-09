@@ -54,7 +54,8 @@ pub(crate) fn relook(node: &Node, change: impl FnOnce(&mut PressableControl)) ->
         size(&spec, &mut layout);
         aegle_layout::set_style(&mut state.tree, id, layout)?;
         state.tree.mark_dirty(id, aegle_ui::Dirty::ALL)?;
-        Ok(())
+        // The kind may have changed with the look.
+        state.dirty_visual_state(id)
     })
 }
 

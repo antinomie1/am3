@@ -3,7 +3,10 @@
 //! and navigation items. A badge decorates the control, so it follows its
 //! layout, theme and visibility without a node of its own.
 
-use std::{cell::RefCell, rc::Rc};
+use std::{
+    cell::{Cell, RefCell},
+    rc::Rc,
+};
 
 use aegle_text::{Paragraph, TextStyle};
 use aegle_ui::{
@@ -22,21 +25,30 @@ struct Shown {
     visible: bool,
 }
 
-struct Paint(Rc<RefCell<Shown>>);
+struct Paint {
+    shown: Rc<RefCell<Shown>>,
+    /// Where the control paints its icon, if not centered.
+    icon: Option<Rc<Cell<Rect>>>,
+}
 
 impl Decorator for Paint {
     fn over(&mut self, cx: &mut PaintCx<'_>) -> Result {
-        let shown = self.0.borrow();
+        let shown = self.shown.borrow();
         if !shown.visible {
             return Ok(());
         }
         let s = Scheme::of(cx.theme);
-        // The icon's box, centered in the control.
-        let icon = Rect::new(
-            (cx.size.width - 24.0) / 2.0,
-            (cx.size.height - 24.0) / 2.0,
-            24.0,
-            24.0,
+        // The icon's box, by default centered in the control.
+        let icon = self.icon.as_ref().map_or_else(
+            || {
+                Rect::new(
+                    (cx.size.width - 24.0) / 2.0,
+                    (cx.size.height - 24.0) / 2.0,
+                    24.0,
+                    24.0,
+                )
+            },
+            |icon| icon.get(),
         );
         let end = |width: f32, inset: f32| {
             if cx.rtl {
@@ -79,8 +91,16 @@ pub struct Badge {
 impl Badge {
     /// Adds a hidden badge to `node`.
     pub fn new(node: &Node) -> Result<Self> {
+        Self::placed(node, None)
+    }
+
+    /// A badge on an icon the control paints at `icon`.
+    pub(crate) fn placed(node: &Node, icon: Option<Rc<Cell<Rect>>>) -> Result<Self> {
         let shown = Rc::new(RefCell::new(Shown::default()));
-        node.decorate(Paint(shown.clone()))?;
+        node.decorate(Paint {
+            shown: shown.clone(),
+            icon,
+        })?;
         Ok(Self {
             node: node.clone(),
             shown,

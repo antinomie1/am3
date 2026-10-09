@@ -124,6 +124,7 @@ fn bounds(state: &State, id: NodeId) -> Rect {
 pub(crate) enum Place {
     Center,
     Bottom,
+    Start,
     End,
 }
 
@@ -148,6 +149,7 @@ impl Layer {
             let (justify, align) = match place {
                 Place::Center => (aegle_ui::Justify::Center, aegle_ui::Align::Center),
                 Place::Bottom => (aegle_ui::Justify::End, aegle_ui::Align::Center),
+                Place::Start => (aegle_ui::Justify::Start, aegle_ui::Align::Start),
                 Place::End => (aegle_ui::Justify::Start, aegle_ui::Align::End),
             };
             let style = Style {

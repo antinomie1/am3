@@ -12,6 +12,7 @@ pub mod icon;
 pub mod tokens;
 
 mod anim;
+mod app_bar;
 mod badge;
 mod button;
 mod chip;
@@ -25,6 +26,7 @@ mod icon_button;
 mod list;
 mod loading;
 mod menu;
+mod navigation;
 mod overlay;
 mod pressable;
 mod progress;
@@ -36,9 +38,12 @@ mod slider;
 pub mod snackbar;
 mod split;
 mod surface;
+mod tabs;
 mod text;
+mod toolbar;
 mod tooltip;
 
+pub use app_bar::{AppBarStyle, BottomAppBar, TopAppBar};
 pub use badge::Badge;
 pub use button::{Button, ButtonShape, ButtonSize, ButtonStyle};
 pub use chip::{Chip, ChipKind};
@@ -54,6 +59,7 @@ pub use icon_button::{IconButton, IconStyle, IconWidth};
 pub use list::{List, ListItem};
 pub use loading::{LoadingControl, LoadingIndicator};
 pub use menu::Menu;
+pub use navigation::{NavItem, NavItemControl, NavigationBar, NavigationDrawer, NavigationRail};
 pub use pressable::PressableControl;
 pub use progress::{Progress, ProgressControl};
 pub use segmented::{Segment, SegmentedButton};
@@ -63,12 +69,15 @@ pub use slider::{Slider, SliderControl, SliderSize};
 pub use snackbar::Snackbar;
 pub use split::SplitButton;
 pub use surface::{Card, CardStyle, SurfaceControl};
+pub use tabs::{Tab, TabControl, TabRowControl, TabStyle, Tabs};
 pub use text::{Text, TextControl};
+pub use toolbar::{Toolbar, ToolbarColor};
 pub use tooltip::{RichTooltip, set_tooltip};
 
 /// Every kind this library declares, by component, for skin overrides with
 /// `Node::set_kind_skin`.
 pub mod kinds {
+    pub use crate::app_bar::{BOTTOM_APP_BAR, TOP_APP_BAR, TOP_APP_BAR_SCROLLED};
     pub use crate::button::{
         ELEVATED_BUTTON, ELEVATED_TOGGLE, FILLED_BUTTON, FILLED_TOGGLE, OUTLINED_BUTTON,
         OUTLINED_TOGGLE, TEXT_BUTTON, TONAL_BUTTON, TONAL_TOGGLE,
@@ -88,6 +97,7 @@ pub mod kinds {
     };
     pub use crate::list::{LIST, LIST_ITEM};
     pub use crate::loading::{CONTAINED_LOADING_INDICATOR, LOADING_INDICATOR};
+    pub use crate::navigation::{NAV_BAR, NAV_DRAWER_ITEM, NAV_ITEM, NAV_RAIL};
     pub use crate::overlay::SCRIM;
     pub use crate::progress::PROGRESS;
     pub use crate::segmented::SEGMENT;
@@ -97,7 +107,9 @@ pub mod kinds {
         DIALOG, ELEVATED_CARD, FILLED_CARD, OUTLINED_CARD, RICH_TOOLTIP, SHEET, SNACKBAR,
         STANDARD_SHEET,
     };
+    pub use crate::tabs::{SECONDARY_TAB, TAB, TAB_ROW};
     pub use crate::text::TEXT;
+    pub use crate::toolbar::{TOOLBAR, VIBRANT_TOOLBAR};
 }
 
 /// Gives a new control's colors Material's default effects spring.
@@ -113,20 +125,25 @@ fn effects(node: &aegle_ui::Node) -> aegle_ui::Result {
 }
 
 /// The engine hooks am3 needs: modal layers block input below them, keep
-/// Tab inside and close on Escape or a timeout, and arrow keys move among
-/// radio buttons. Every control that needs them installs them on creation.
+/// Tab inside and close on Escape or a timeout, tab indicators follow
+/// layout, and arrow keys move among radio buttons. Every control that needs them installs them on creation.
 pub static HOOKS: aegle_ui::Hooks = aegle_ui::Hooks {
     key: Some(key),
     press: None,
     overlay_at: Some(overlay::overlay_at),
-    place: None,
-    removed: Some(overlay::removed),
+    place: Some(tabs::place),
+    removed: Some(removed),
     removed_after: None,
     measure: None,
     realize: None,
     hover: None,
     wake: Some(overlay::wake),
 };
+
+fn removed(state: &mut aegle_ui::State, id: aegle_ui::NodeId) {
+    overlay::removed(state, id);
+    tabs::removed(state, id);
+}
 
 fn key(state: &mut aegle_ui::State, key: &aegle_ui::KeyInput<'_>) -> aegle_ui::Result<bool> {
     Ok(overlay::key(state, key)? || selection::radio_key(state, key)?)

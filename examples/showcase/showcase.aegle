@@ -106,7 +106,6 @@ Window {
                         title: "列表"
                         MdList {
                             width: 420dp
-                            background: #00000000
                             MdListItem {
                                 headline: "Ada Lovelace"; clickable: true; supporting: "周五一起吃午饭？"
                                 leading: "person"; trailing_text: "15 分钟"; on clicked { last = "Ada Lovelace" }
@@ -159,12 +158,8 @@ Window {
                         }
                         MdButton { text: "提示条"; style: tonal; on clicked { archived = false; archived = true } }
                     }
-                    // A section written out, since ids can't be in a slot.
                     Column {
                         gap: 12dp
-                        padding: 20dp
-                        radius: 24dp
-                        background: token("am3.color.surface-container")
                         MdText { text: "菜单与工具提示"; typescale: title_medium }
                         Row {
                             gap: 12dp

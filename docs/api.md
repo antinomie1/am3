@@ -164,7 +164,7 @@ Badge::new(&icon_button)?.show_count(3)?;
 
 `SurfaceControl` 是所有表面的控件：阴影、容器、描边、四个角各自的半径（不等时绘制缓存路径），可选按钮行为（状态层、涟漪、悬停升高）。卡片、对话框、表、提示条、富工具提示、列表与列表项都是它配不同的 `ControlKind`。`Text` 与 `IconView` 是带 Material 字体角色和颜色角色的文字与图标叶子控件。
 
-这些表面本身不滚动。需要滚动的内容放进 `am3::scroll_view(&parent)`（标记里是 `MdScrollView`）：它就是 Aegle 的 `ScrollView`（裁剪并滚动的列），只换了皮肤——没有描边，滚动条轨道透明，滑块为 on surface 38%，悬停或拖动时 60%。滚动条颜色来自 Aegle 外观的 `scrollbar` 字段（Aegle 提交 2b32481），多行文本框使用同一组颜色。滚动条的几何由 Aegle 决定：胶囊形，静止时 4 dp 粗，指针移到滚动条上或拖动时 8 dp，两端让开视图的圆角。
+这些表面本身不滚动。需要滚动的内容放进 `am3::scroll_view(&parent)`（标记里是 `MdScrollView`）：它就是 Aegle 的 `ScrollView`（裁剪并滚动的列），只换了皮肤——没有描边，滚动条轨道透明，滑块为 on surface 38%，悬停或拖动时 60%。滚动条颜色来自 Aegle 外观的 `scrollbar` 字段（Aegle 提交 2b32481），多行文本框使用同一组颜色。滚动条粗细与形状仍由 Aegle 决定（8 dp、两端全圆）。
 
 模态层不是新的窗口机制，而是根节点下的一个全窗口宿主节点（scrim 控件），用 flex 放置其中的表面；显示时移为根的最后一个子节点，因此绘制在最上层。行为通过 Aegle 的 `Hooks` 加入，和 aegle-widgets 的弹出层同一方式：
 

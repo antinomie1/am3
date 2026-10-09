@@ -54,8 +54,6 @@ pub fn build(page: &Container, say: &Say) -> Result<Anchors> {
     let row = section(page, "列表")?;
     let list = List::new(&row)?;
     list.set_width(420.0)?;
-    // The section's surface shows through.
-    list.set_background(Color::TRANSPARENT)?;
     for (headline, supporting, icon, trailing) in [
         ("Ada Lovelace", "周五一起吃午饭？", "person", "15 分钟"),
         ("邮件", "3 封未读", "mail", "刚刚"),
